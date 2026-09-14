@@ -22,7 +22,11 @@ export const config = {
   /** Translation cache file. Empty disables persistence; the cache stays in memory. */
   translationCachePath: process.env['TRANSLATION_CACHE_PATH'] ?? '.state/translations.json',
   awsRegion: process.env['AWS_REGION'] ?? 'us-west-2',
-  /** Bedrock model id. Note the `anthropic.` prefix Bedrock requires. */
-  bedrockModelId: process.env['BEDROCK_MODEL_ID'] ?? 'anthropic.claude-opus-5',
+  /**
+   * Bedrock model id. On-demand throughput requires an **inference profile**, so the
+   * id needs a `us.` or `global.` prefix — a bare `anthropic.claude-opus-5` is
+   * rejected with "Invocation ... with on-demand throughput isn't supported".
+   */
+  bedrockModelId: process.env['BEDROCK_MODEL_ID'] ?? 'us.anthropic.claude-opus-5',
   awsProfile: process.env['AWS_PROFILE'],
 } as const;

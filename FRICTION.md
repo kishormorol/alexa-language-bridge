@@ -26,6 +26,18 @@ Each entry needs all six fields. Severity: Blocker / Major / Minor.
 ## Entries
 
 <!-- newest first -->
+### FL-006 — Bedrock model ids need an inference-profile prefix, and the error does not say which
+
+- **Date:** 2026-09-14
+- **Tool / SDK / API:** Amazon Bedrock (`bedrock-runtime`)
+- **Task attempted:** Invoke a Claude model on a new AWS account, using the model id exactly as `aws bedrock list-foundation-models` returns it.
+- **Steps taken:** `aws bedrock-runtime converse --model-id anthropic.claude-haiku-4-5-20251001-v1:0 ...`, taking the id verbatim from the catalog listing.
+- **Expected result:** Either a response, or an error naming the correct id.
+- **Actual result:** Three different errors in sequence, each hiding the next: (1) `AccessDeniedException: Your account is currently being verified` — new-account verification, roughly two hours, no way to check progress; (2) `ValidationException: Invocation of model ID ... with on-demand throughput isn't supported. Retry your request with the ID or ARN of an inference profile that contains this model.` — the catalog returns bare ids, but on-demand requires the `us.`/`global.` inference-profile id, and the error names no candidate; (3) `ResourceNotFoundException: Model use case details have not been submitted for this account.` One invocation succeeded between (2) and (3) before the form check began enforcing, so the gate is not immediately consistent. Separately, `us.anthropic.claude-opus-5` returns `AccessDeniedException: not available for this account`, while `us.anthropic.claude-haiku-4-5-...` reaches the use-case-form error — so availability differs per model with no way to list which are actually usable.
+- **Severity:** Major
+- **Workaround used:** `aws bedrock list-inference-profiles` to find the real id; the use-case form still has to be submitted through the console.
+- **Actionable suggestion:** Three fixes. Have `list-foundation-models` mark which ids are invocable on-demand, or return the inference-profile id alongside — the catalog currently hands you an id that cannot be used. Have the validation error name the inference profile it wants, since the service already knows it. And surface all applicable gates at once rather than one per attempt: a developer on a new account hits verification, then profile ids, then the use-case form, then per-model availability, discovering each only after clearing the last. For a hackathon, that is four separate multi-hour stalls where one message would do.
+
 ### FL-005 — MCP Apps package is unusable from the SDK line that has Streamable HTTP
 
 - **Date:** 2026-09-14
