@@ -25,7 +25,7 @@ Budget: roughly 60% build, 25% submission artifacts, 15% friction log and feedba
 | --- | --- | --- | --- |
 | 1 | Language | TypeScript | MCP Apps UIs are web, so one language covers server + UI; the TS SDK tracks `2025-11-25` most closely. ML comfort is Python, but the language work happens in Bedrock over HTTP. |
 | 2 | Concept | Household language bridge | Maxes Impact and Quality-of-Idea together. Revisit only if the `en-US` locale lock blocks non-English input at the Alexa layer. |
-| 3 | Hosting | AWS (Lambda Function URL or App Runner) + Bedrock | Buys the <500ms budget, a stable HTTPS URL for judges, and the AWS Builder entry in one move. `cloudflared` for local iteration only. |
+| 3 | Hosting | AWS (Lambda Function URL or App Runner) + Bedrock, on a **dedicated account** | Buys the <500ms budget, a stable HTTPS URL for judges, and the AWS Builder entry in one move. Dedicated account because credits attach to one account ID and spend stays isolated. `cloudflared` for local iteration only. See [docs/aws-setup.md](docs/aws-setup.md). |
 | 4 | Open-source PR | Chosen from the friction log in weeks 2–3 | Authentic beats manufactured; the rubric rewards a real integration pattern over a new empty repo. |
 
 ## Hard constraints
@@ -43,7 +43,8 @@ Budget: roughly 60% build, 25% submission artifacts, 15% friction log and feedba
 ## Milestones
 
 ### 1. De-risk (14–20 Sep) — nothing else starts until this lands
-Amazon developer account. Install `alexa-ai`, `configure`, `new mcp`, deploy a
+Amazon developer account. Dedicated AWS account, Bedrock model access requested,
+credits form submitted, profiles configured (`docs/aws-setup.md`). Install `alexa-ai`, `configure`, `new mcp`, deploy a
 two-tool hello-world, confirm it answers in the web simulator. Confirm how a
 non-English utterance reaches the server. `FRICTION.md` opens on line one.
 
@@ -87,6 +88,8 @@ two days — it carries Design and Impact almost by itself.
 | <500 ms vs an LLM round-trip | Forces a week-4 redesign | Cache, small fast model, stream early |
 | MCP Apps docs sparse or extension immature | Loses the visual differentiator | Fall back to plain cards — still beats tools-only |
 | Sole maintainer, fixed date | Everything | Milestones 2–4 are parallel-safe; cut 7 before 5 |
+| Bedrock model access not granted on a new account | Blocks the language layer | Request the same day the account opens, not in week three |
+| Promo credits run out before request | Out-of-pocket spend | "While supplies last" — submit the form the day the account ID exists |
 
 ## Tests
 

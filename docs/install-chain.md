@@ -7,10 +7,10 @@ public npm registry. The real sequence, in order:
    Complete the profile in the Alexa app: phone number, address, and a preferred
    marketplace that is an Alexa+ supported marketplace. Device language must match
    a supported locale.
-2. **AWS account** with working credentials.
+2. **A dedicated AWS account** with working credentials — see [aws-setup.md](aws-setup.md).
 3. **AWS profile `alexa-ai`** that assumes
-   `arn:aws:iam::372468808636:role/AddOn3PDeveloperToolsRead`.
-   This is the real access gate.
+   `arn:aws:iam::372468808636:role/AddOn3PDeveloperToolsRead`, sourcing from the
+   hackathon account profile. This is the real access gate.
 4. **CodeArtifact login** — token is valid 12 hours, so this recurs:
 
    ```bash
@@ -23,6 +23,7 @@ public npm registry. The real sequence, in order:
        --namespace @alexa-ai \
        --profile alexa-ai
    ```
+
 
 5. **Install and verify:**
 
