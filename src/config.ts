@@ -20,5 +20,7 @@ export const config = {
   /** OAuth 2.1 is on unless explicitly disabled for local iteration. */
   authEnabled: (process.env['AUTH_ENABLED'] ?? 'true') !== 'false',
   awsRegion: process.env['AWS_REGION'] ?? 'us-west-2',
-  bedrockModelId: process.env['BEDROCK_MODEL_ID'] ?? '',
+  /** Bedrock model id. Note the `anthropic.` prefix Bedrock requires. */
+  bedrockModelId: process.env['BEDROCK_MODEL_ID'] ?? 'anthropic.claude-opus-5',
+  awsProfile: process.env['AWS_PROFILE'],
 } as const;

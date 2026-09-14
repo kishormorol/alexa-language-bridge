@@ -80,9 +80,14 @@ and legacy metadata formats, with structured content for the view to render. The
 official package could not be used (FL-005), so the contract is implemented
 directly. Four conformance tests cover it.
 
-### 6. Deploy + latency pass (5–14 Oct)
-Onto AWS, then get under 500 ms. Cache aggressively; a cold model call will blow
-the budget on its own.
+### 6. Bedrock + deploy + latency pass — provider written 14 Sep
+`src/lang/bedrock.ts` is written and unit-tested against an injected client: Claude
+on Bedrock through the Mantle client, frozen cached system prompt, `effort: low`.
+It activates with `LANGUAGE_PROVIDER=bedrock` and nothing else changes.
+
+**Blocked on Bedrock model access** in the hackathon account — until then it cannot
+be exercised against the real service, so the latency numbers are unmeasured and
+the model choice is unvalidated. Deploy and the latency pass follow that.
 
 ### 7. Upstream PR — DONE 14 Sep
 `modelcontextprotocol/typescript-sdk`, backporting the accepted `Transport` type
@@ -119,7 +124,7 @@ two days — it carries Design and Impact almost by itself.
 
 ## Tests
 
-38 green: store persistence and isolation, render caching, an end-to-end MCP
+44 green: store persistence and isolation, render caching, an end-to-end MCP
 client/server round trip over Streamable HTTP, and the cross-language household
 scenarios — Ma ticking off an item her son added in English, a reminder crossing
 languages, a device matched by whatever she calls it, and an ambiguous name asking

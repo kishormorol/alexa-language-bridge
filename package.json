@@ -19,6 +19,7 @@
     "sim": "tsx src/sim/index.ts"
   },
   "dependencies": {
+    "@anthropic-ai/bedrock-sdk": "^0.33.5",
     "@modelcontextprotocol/sdk": "^1.30.0",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",

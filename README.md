@@ -128,10 +128,18 @@ lives — so the contract is implemented directly. See FL-005.
 
 ## Language provider
 
-`LANGUAGE_PROVIDER=echo` is the default. It does not translate — it prefixes text
-with the target tag so a wrong-language rendering is obvious in tests and demos
-rather than silently plausible. The Bedrock provider replaces it once model access
-is granted; nothing outside `src/lang/` changes.
+Two implementations behind one interface:
+
+| `LANGUAGE_PROVIDER` | Behaviour |
+| --- | --- |
+| `echo` (default) | Offline. Does not translate — prefixes text with the target tag, so a wrong-language rendering is obvious rather than silently plausible. |
+| `bedrock` | Claude on Amazon Bedrock via the Mantle client. Frozen, cached system prompt and `effort: low`, both for the 500 ms round-trip budget. |
+
+Switching is one environment variable; nothing outside `src/lang/` changes.
+
+```bash
+LANGUAGE_PROVIDER=bedrock AWS_PROFILE=alexa-hackathon npm run sim
+```
 
 ## Repository layout
 
