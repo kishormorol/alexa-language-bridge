@@ -60,12 +60,11 @@ git push --force origin main
 | --- | --- | --- |
 | ~~Bedrock model access~~ | — | **Done 14 Sep.** Haiku 4.5 live; every demo beat works on real translation |
 | ~~Join the hackathon on Devpost~~ | — | **Done 14 Sep.** Implied by the credits approval — only registered participants qualify |
-| ~~AWS promotional credits form~~ | — | **Approved 14 Sep.** $150, valid through 31 Aug 2028. Still to redeem in the billing console |
+| ~~AWS promotional credits form~~ | — | **Approved and redeemed 14 Sep.** $150, valid through 31 Aug 2028 |
 | **Record the demo video** | Kishor | Three of four scoring criteria. Script in `docs/video-script.md`; shootable today |
 
 ## Day-of
 
-- [ ] $150 credit redeemed in the billing console (code is in the approval email, not in this repo)
 - [ ] `npm test` green
 - [ ] Fresh clone into a temp directory, follow the README exactly, confirm it runs
 - [ ] Repo public, license visible in About

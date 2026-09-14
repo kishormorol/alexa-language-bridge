@@ -50,7 +50,7 @@ spec and demonstrate it through a simulated Alexa+ experience, both of which the
 rules accept. No Amazon onboarding on the critical path.
 
 Still open in this milestone: nothing — Bedrock model access granted 14 Sep, and the
-$150 promotional credits were approved the same day (redemption pending). Install
+$150 promotional credits were approved and redeemed the same day. Install
 `alexa-ai`, `configure`, `new mcp`, deploy a two-tool hello-world, confirm it answers
 in the web simulator. Confirm how a non-English utterance reaches the server. `FRICTION.md` opens on line one.
 
@@ -156,8 +156,8 @@ two days — it carries Design and Impact almost by itself.
 
 ### 9. Submit
 - ~~**21 Oct** — AWS promotional credits form closes (request regardless).~~ Requested
-  and **approved 14 Sep**: $150, valid through 31 Aug 2028. Redeem in the billing
-  console before the first real Bedrock spend. The code lives outside this repo.
+  and **approved 14 Sep**: $150, redeemed the same day, valid through 31 Aug 2028.
+  The code lives outside this repo.
 - **22 Oct** — submit. Do not touch the 23 Oct noon deadline.
 
 ## Risks
