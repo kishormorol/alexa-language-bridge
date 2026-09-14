@@ -3,6 +3,9 @@ import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { Device, ListItem, Member, Reminder, Utterance } from '../domain/types.js';
 import type { LanguageProvider } from '../lang/provider.js';
+import { languageName } from '../domain/languages.js';
+import { HOUSEHOLD_CARD_URI } from '../apps/household-card.js';
+import { uiMeta } from '../apps/contract.js';
 import {
   failure,
   forMember,
@@ -91,6 +94,7 @@ export function registerHomeTools(server: McpServer, { store, language }: ToolDe
         includeDone: z.boolean().default(false).describe('Include items already ticked off.'),
       },
       annotations: { readOnlyHint: false },
+      _meta: uiMeta(HOUSEHOLD_CARD_URI),
     },
     async ({ householdId: hid, member, list, includeDone }) => {
       const person = await store.findMember(hid, member);
@@ -104,8 +108,27 @@ export function registerHomeTools(server: McpServer, { store, language }: ToolDe
       }
 
       const body = await lines(language, items, person, (i) => `${i + 1}. `);
+
+      const rendered: { text: string; done: boolean }[] = [];
+      for (const item of items) {
+        const r = await forMember(language, item, person);
+        rendered.push({ text: r.text, done: item.doneAt !== null });
+      }
       await store.save();
-      return text(body);
+
+      return {
+        ...text(body),
+        structuredContent: {
+          kind: 'list',
+          title: `${list} list`,
+          reader: {
+            name: person.name,
+            language: person.language,
+            languageName: languageName(person.language),
+          },
+          items: rendered,
+        },
+      };
     },
   );
 

@@ -26,6 +26,17 @@ Each entry needs all six fields. Severity: Blocker / Major / Minor.
 ## Entries
 
 <!-- newest first -->
+### FL-005 — MCP Apps package is unusable from the SDK line that has Streamable HTTP
+
+- **Date:** 2026-09-14
+- **Tool / SDK / API:** `@modelcontextprotocol/ext-apps` 2.0.0 · `@modelcontextprotocol/sdk` 1.30.0
+- **Task attempted:** Add an MCP Apps UI to a server built on `@modelcontextprotocol/sdk@1.30.0` with the Streamable HTTP transport that Alexa+ requires.
+- **Steps taken:** `npm install @modelcontextprotocol/ext-apps@2.0.0`.
+- **Actual result:** `npm error ERESOLVE ... peer zod@"^4.2.0" from @modelcontextprotocol/ext-apps@2.0.0`, against `zod@3.25.76` held by `sdk@1.30.0` (which allows `^3.25 || ^4.0`). Its peers also require `@modelcontextprotocol/{core,client,server}@^2.0.0` — the separate v2 package line, not `sdk@1.x`. So MCP Apps cannot be added to a 1.x server at all; it requires migrating to v2 and to zod 4.
+- **Severity:** Major
+- **Workaround used:** Implemented the Apps contract directly — `text/html;profile=mcp-app`, a `ui://` resource, and `_meta.ui.resourceUri` plus the legacy `ui/resourceUri` key — against `registerResource`/`registerTool`, which 1.x already provides. The official helpers turn out to be thin wrappers over exactly those two calls, so this conforms without the dependency.
+- **Actionable suggestion:** Two things would have saved a day. State plainly at the top of the MCP Apps docs which SDK line it targets — nothing on the landing page says it is v2-only, and the first signal is an ERESOLVE error about zod. Second, either publish a 1.x-compatible release or document the hand-rolled contract as a supported path, since 1.x is still where Streamable HTTP lives and Alexa+ mandates that transport. As it stands the two features Alexa+ asks for — Streamable HTTP and MCP Apps — cannot both be had from one supported package.
+
 ### FL-004 — SDK `Transport` interface is not `exactOptionalPropertyTypes`-safe
 
 - **Date:** 2026-09-14

@@ -76,6 +76,16 @@ npm start        # run the compiled server
 | `get_messages` | Read back waiting messages in the reader's own language |
 | `interpret_for_household` | Carry a live utterance from one person's language to another's |
 
+## The card
+
+`interpret_for_household` and `read_list` carry an MCP Apps UI: a `ui://` resource
+served as `text/html;profile=mcp-app`, showing what was said and what the other
+person hears side by side, never one translated into the other.
+
+The official `@modelcontextprotocol/ext-apps` package targets the v2 SDK line and
+zod 4, which is incompatible with the 1.x line where the Streamable HTTP transport
+lives — so the contract is implemented directly. See FL-005.
+
 ## Language provider
 
 `LANGUAGE_PROVIDER=echo` is the default. It does not translate — it prefixes text

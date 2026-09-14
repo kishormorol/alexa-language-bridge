@@ -68,10 +68,12 @@ Per-household members, languages and message history, persisted and proven acros
 sessions by test. Swap the file store for DynamoDB behind `HouseholdStore` if the
 demo needs it; nothing above that interface changes.
 
-### 5. MCP Apps visual layer (5–14 Oct) — NEXT
-`src/apps/`. The bilingual card. Highest score-per-hour available — judges named
-MCP Apps and media support explicitly as the creative case, and it is the visual
-that carries Design and Impact in the video.
+### 5. MCP Apps visual layer — DONE 14 Sep
+`src/apps/`. The household card ships as a `ui://` resource with the MCP Apps MIME
+type, referenced from `interpret_for_household` and `read_list` in both the modern
+and legacy metadata formats, with structured content for the view to render. The
+official package could not be used (FL-005), so the contract is implemented
+directly. Four conformance tests cover it.
 
 ### 6. Deploy + latency pass (5–14 Oct)
 Onto AWS, then get under 500 ms. Cache aggressively; a cold model call will blow
@@ -96,7 +98,7 @@ two days — it carries Design and Impact almost by itself.
 | ~~Add-on certification gates simulator access~~ | ~~Schedule-breaking~~ | **Materialised 14 Sep** (FL-003) and routed around: self-hosted MCP server + simulated Alexa+ demo, no Amazon gate |
 | ~~`en-US` locale lock blocks non-English input~~ | ~~Kills decision 2~~ | Moot — the simulated path owns its own speech input, so locale is ours to choose |
 | <500 ms vs an LLM round-trip | Forces a week-4 redesign | Cache, small fast model, stream early |
-| MCP Apps docs sparse or extension immature | Loses the visual differentiator | Fall back to plain cards — still beats tools-only |
+| ~~MCP Apps docs sparse or extension immature~~ | ~~Loses the visual differentiator~~ | **Materialised 14 Sep** (FL-005): the package is v2-only. Contract implemented directly against 1.x instead |
 | Sole maintainer, fixed date | Everything | Milestones 2–4 are parallel-safe; cut 7 before 5 |
 | Bedrock model access not granted on a new account | Blocks the language layer | Request the same day the account opens, not in week three |
 | Promo credits run out before request | Out-of-pocket spend | "While supplies last" — submit the form the day the account ID exists |

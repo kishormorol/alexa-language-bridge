@@ -1,5 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { registerTools, type ToolDeps } from './tools/index.js';
+import { registerHouseholdCard } from './apps/household-card.js';
 
 export const SERVER_INFO = {
   name: 'alexa-language-bridge',
@@ -8,7 +9,7 @@ export const SERVER_INFO = {
 
 export function createServer(deps: ToolDeps): McpServer {
   const server = new McpServer(SERVER_INFO, {
-    capabilities: { tools: {} },
+    capabilities: { tools: {}, resources: {} },
     instructions: [
       'Gives every member of a household the run of the house in the language they speak,',
       'including those who do not speak English.',
@@ -32,6 +33,7 @@ export function createServer(deps: ToolDeps): McpServer {
     ].join('\n'),
   });
 
+  registerHouseholdCard(server);
   registerTools(server, deps);
   return server;
 }

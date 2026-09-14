@@ -2,6 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { languageName } from '../domain/languages.js';
+import { HOUSEHOLD_CARD_URI } from '../apps/household-card.js';
+import { uiMeta } from '../apps/contract.js';
 import type { Message } from '../domain/types.js';
 import {
   failure,
@@ -104,6 +106,7 @@ export function registerMessageTools(server: McpServer, { store, language }: Too
         utterance: z.string().min(1).describe('What was said.'),
       },
       annotations: { readOnlyHint: true },
+      _meta: uiMeta(HOUSEHOLD_CARD_URI),
     },
     async ({ householdId: hid, speaker, listener, utterance }) => {
       const from = await store.findMember(hid, speaker);
@@ -113,10 +116,28 @@ export function registerMessageTools(server: McpServer, { store, language }: Too
 
       const said = spoken(from, utterance);
       const heard = await forMember(language, said, to);
-      return text(
-        `${from.name} (${languageName(from.language)}): ${utterance}\n` +
-          `${to.name} hears (${languageName(to.language)}): ${heard.text}`,
-      );
+      return {
+        ...text(
+          `${from.name} (${languageName(from.language)}): ${utterance}\n` +
+            `${to.name} hears (${languageName(to.language)}): ${heard.text}`,
+        ),
+        structuredContent: {
+          kind: 'exchange',
+          title: 'In the room',
+          spoken: {
+            name: from.name,
+            language: from.language,
+            languageName: languageName(from.language),
+            text: utterance,
+          },
+          heard: {
+            name: to.name,
+            language: to.language,
+            languageName: languageName(to.language),
+            text: heard.text,
+          },
+        },
+      };
     },
   );
 }
