@@ -37,6 +37,12 @@ a backport is what is needed.
       this project, re-enabled `exactOptionalPropertyTypes: true`, and typechecked
       clean — then restored the published 1.30.0
 - [x] PR opened against `v1.x`: https://github.com/modelcontextprotocol/typescript-sdk/pull/2814
+- [x] Upstream CI green — build, lint, client- and server-conformance, tests and e2e
+      on Node 18 and 24 (`publish` skips on PRs). One red `build` on the first push
+      was Prettier formatting on the changeset, not the change; fixed in `2450dfe`.
+      Lesson: run `npm run check`, not just `typecheck` and `test` — `check` is what
+      CI gates on.
+- [ ] Awaiting maintainer review (`REVIEW_REQUIRED`)
 
 **Submission fields**
 
