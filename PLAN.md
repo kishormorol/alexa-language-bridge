@@ -90,6 +90,12 @@ fix to `v1.x`. Fork pushed, 1647 upstream tests green, verified against this
 project. See `docs/open-source-contribution.md`.
 PR: https://github.com/modelcontextprotocol/typescript-sdk/pull/2814
 
+### 5b. Simulated Alexa+ host — DONE 14 Sep
+`src/sim/`. `npm run sim` boots the MCP server with OAuth enforced, completes the
+authorization code + PKCE flow headlessly, connects over Streamable HTTP, and serves
+a screen that renders the MCP App card. Rule-based intent routing behind a `Router`
+interface, swapping to Bedrock later. This is the surface the demo video is shot on.
+
 ### 8. Submission artifacts (15–20 Oct)
 Demo video (<3 min, shot in the simulator or on a device), README setup and run
 instructions, `PRODUCT-FEEDBACK.md`, `FRICTION.md` tidied. The video gets its own
@@ -113,7 +119,7 @@ two days — it carries Design and Impact almost by itself.
 
 ## Tests
 
-29 green: store persistence and isolation, render caching, an end-to-end MCP
+38 green: store persistence and isolation, render caching, an end-to-end MCP
 client/server round trip over Streamable HTTP, and the cross-language household
 scenarios — Ma ticking off an item her son added in English, a reminder crossing
 languages, a device matched by whatever she calls it, and an ambiguous name asking

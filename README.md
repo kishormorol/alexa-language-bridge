@@ -47,6 +47,27 @@ npm run build    # compile to dist/
 npm start        # run the compiled server
 ```
 
+## The simulator
+
+The hackathon rules accept a simulated Alexa+ experience, and the real MCP Toolkit
+is gated behind Amazon onboarding this project does not have (FL-003). So the demo
+surface is our own host:
+
+```bash
+npm run sim     # then open http://localhost:4000
+```
+
+One command boots the MCP server with OAuth enforced, walks the full authorization
+code + PKCE flow as a real client would, connects over Streamable HTTP, and serves a
+screen. Pick who is speaking, say something, watch the tool call and the card.
+
+It is a genuine MCP host — it authenticates properly, reads `tools/list`, honours the
+`_meta.ui.resourceUri` a tool declares, and fetches the `ui://` resource to render.
+Nothing is stubbed between the UI and the server.
+
+Intent routing stands in for what Alexa+ would do. `ROUTER=rules` is deterministic
+and offline; a Bedrock-backed router replaces it once model access lands.
+
 ## Authentication
 
 OAuth 2.1 authorization code with PKCE (S256), enforced by default.

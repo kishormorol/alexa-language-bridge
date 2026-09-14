@@ -23,13 +23,34 @@ const listName = z
   .default('shopping')
   .describe('Which list. Defaults to the shopping list.');
 
-/** Match an utterance against what someone said, in any language it is held in. */
+const STOP = new Set(['the', 'a', 'an', 'my', 'our', 'please', 'to', 'in', 'on', 'of']);
+
+const words = (s: string) =>
+  s
+    .toLowerCase()
+    .split(/[^\p{L}\p{N}]+/u)
+    .filter((w) => w.length > 1 && !STOP.has(w));
+
+/**
+ * Match what someone said against a stored utterance, in any language it is held in.
+ *
+ * Containment has to work both ways: a person says "the lamp" for something stored
+ * as "lamp", and "lamp" for something stored as "lamp stand". Falling back to word
+ * overlap keeps both working without matching on stopwords alone.
+ */
 function mentions(utterance: Utterance, needle: string): boolean {
-  const n = needle.trim().toLowerCase();
-  if (n === '') return false;
-  return [utterance.original, ...utterance.renderings].some((r) =>
-    r.text.toLowerCase().includes(n),
-  );
+  const needleText = needle.trim().toLowerCase();
+  if (needleText === '') return false;
+
+  const needleWords = words(needleText);
+  if (needleWords.length === 0) return false;
+
+  return [utterance.original, ...utterance.renderings].some((r) => {
+    const text = r.text.toLowerCase();
+    if (text.includes(needleText) || needleText.includes(text)) return true;
+    const textWords = new Set(words(text));
+    return needleWords.some((w) => textWords.has(w));
+  });
 }
 
 async function lines(
