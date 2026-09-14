@@ -23,10 +23,15 @@ export const config = {
   translationCachePath: process.env['TRANSLATION_CACHE_PATH'] ?? '.state/translations.json',
   awsRegion: process.env['AWS_REGION'] ?? 'us-west-2',
   /**
-   * Bedrock model id. On-demand throughput requires an **inference profile**, so the
-   * id needs a `us.` or `global.` prefix — a bare `anthropic.claude-opus-5` is
-   * rejected with "Invocation ... with on-demand throughput isn't supported".
+   * Bedrock model id, in the form the **Mantle** endpoint expects — bare
+   * `anthropic.<model>`, no version suffix and no inference-profile prefix.
+   *
+   * The two Bedrock endpoints disagree, so this is easy to get wrong:
+   *   bedrock-mantle   anthropic.claude-haiku-4-5
+   *   bedrock-runtime  us.anthropic.claude-haiku-4-5-20251001-v1:0
+   * On Mantle a 404 "does not exist" means the id is wrong; a 403 means the id is
+   * right and the account is not entitled yet. See FL-006.
    */
-  bedrockModelId: process.env['BEDROCK_MODEL_ID'] ?? 'us.anthropic.claude-opus-5',
+  bedrockModelId: process.env['BEDROCK_MODEL_ID'] ?? 'anthropic.claude-haiku-4-5',
   awsProfile: process.env['AWS_PROFILE'],
 } as const;

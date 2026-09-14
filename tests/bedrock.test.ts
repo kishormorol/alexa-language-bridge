@@ -7,7 +7,7 @@ function stub(blocks: unknown[]) {
 }
 
 const provider = (client: MessagesClient) =>
-  new BedrockLanguageProvider({ region: 'us-west-2', model: 'us.anthropic.claude-opus-5', client });
+  new BedrockLanguageProvider({ region: 'us-west-2', model: 'anthropic.claude-haiku-4-5', client });
 
 describe('BedrockLanguageProvider', () => {
   it('does not call the model when source and target already match', async () => {
@@ -35,8 +35,8 @@ describe('BedrockLanguageProvider', () => {
       output_config?: { effort?: string };
       system: { cache_control?: { type: string } }[];
     };
-    // On-demand requires an inference-profile id; a bare `anthropic.` id is rejected.
-    expect(request.model).toBe('us.anthropic.claude-opus-5');
+    // The Mantle endpoint takes a bare id; bedrock-runtime takes a profile id.
+    expect(request.model).toBe('anthropic.claude-haiku-4-5');
     expect(request.output_config?.effort).toBe('low');
     expect(request.system[0]?.cache_control?.type).toBe('ephemeral');
   });
