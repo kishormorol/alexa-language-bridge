@@ -12,6 +12,27 @@ interface Entry {
 }
 
 /**
+ * Whether a stored rendering is safe to hand to a household.
+ *
+ * A cache serves what it holds forever, so it cannot trust a file written by an
+ * older build. Before the Bedrock provider bounded its reply, a model that argued
+ * with itself was stored whole — "kheyecho?\n\n(already in Bangla romanised)" —
+ * and would be read aloud on every hit. A rendering is one spoken line; anything
+ * else is dropped on load and re-fetched on the next ask, by a provider that now
+ * refuses to produce it.
+ */
+function isServable(entry: unknown): entry is Entry {
+  if (typeof entry !== 'object' || entry === null) return false;
+  const { text, detectedLanguage } = entry as Partial<Entry>;
+  return (
+    typeof text === 'string' &&
+    text.trim() !== '' &&
+    !text.includes('\n') &&
+    typeof detectedLanguage === 'string'
+  );
+}
+
+/**
  * Content-addressed cache in front of any language provider.
  *
  * The 500 ms round-trip budget is the reason this exists. A household says the same
@@ -96,8 +117,18 @@ export class CachingLanguageProvider implements LanguageProvider {
     if (!this.#path) return;
     try {
       const raw = await readFile(this.#path, 'utf8');
+      let evicted = 0;
       for (const [key, entry] of Object.entries(JSON.parse(raw) as Record<string, Entry>)) {
+        if (!isServable(entry)) {
+          evicted += 1;
+          continue;
+        }
         this.#entries.set(key, entry);
+      }
+      if (evicted > 0) {
+        console.warn(`[cache] evicted ${evicted} unservable entr${evicted === 1 ? 'y' : 'ies'} from ${this.#path}`);
+        // Rewrite now so the file heals, rather than waiting for the next miss.
+        this.#persist();
       }
     } catch (err) {
       // A missing or unreadable cache is not an error — it is a cold cache.

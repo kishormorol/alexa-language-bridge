@@ -12,7 +12,7 @@
 | Track tech imported and **called at runtime**, not just named in the README | ✅ end-to-end client→server round trips in tests |
 | Public code repository | ✅ public since 14 Sep |
 | OSS license detectable in the GitHub About panel | ✅ `spdx_id: MIT` returned by the license API |
-| Setup and run instructions a judge can follow | ✅ verified by fresh clone: install, 73 tests, build, and `npm run sim` all pass with no cloud credentials |
+| Setup and run instructions a judge can follow | ✅ verified by fresh clone: install, 76 tests, build, and `npm run sim` all pass with no cloud credentials |
 | Demo video under 3:00 | ⬜ not shot |
 | Video public on YouTube or Vimeo | ⬜ |
 | Video shows the project functioning on its platform | ⬜ simulator capture (permitted under the simulated Alexa+ path) |
