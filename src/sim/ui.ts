@@ -112,7 +112,10 @@ export const SIM_UI = String.raw`<!doctype html>
 
   function showCard(turn) {
     if (!turn.cardHtml) return;
-    const doc = turn.cardHtml.replace('</script>',
+    // Both closing-tag strings below are split deliberately. Writing that tag as a
+    // literal anywhere inside an inline script — code or comment — ends the block
+    // early, and the rest of the file renders as text on the page.
+    const doc = turn.cardHtml.replace('</' + 'script>',
       '\nglobalThis.mcpAppData = ' + JSON.stringify(turn.structuredContent) +
       ';\nrender(globalThis.mcpAppData);\n</' + 'script>');
     screen.innerHTML = '';
