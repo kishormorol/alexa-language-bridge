@@ -10,9 +10,9 @@
 | MCP spec `2025-11-25` or later | ✅ asserted in `tests/mcp.e2e.test.ts` |
 | Streamable HTTP transport | ✅ |
 | Track tech imported and **called at runtime**, not just named in the README | ✅ end-to-end client→server round trips in tests |
-| Public code repository | ⚠️ **repo is private — flip before submitting** |
-| OSS license detectable in the GitHub About panel | ⚠️ **verify after flipping to public** |
-| Setup and run instructions a judge can follow | ✅ `README.md` |
+| Public code repository | ✅ public since 14 Sep |
+| OSS license detectable in the GitHub About panel | ✅ `spdx_id: MIT` returned by the license API |
+| Setup and run instructions a judge can follow | ✅ verified by fresh clone: install, 65 tests, build, and `npm run sim` all pass with no cloud credentials |
 | Demo video under 3:00 | ⬜ not shot |
 | Video public on YouTube or Vimeo | ⬜ |
 | Video shows the project functioning on its platform | ⬜ simulator capture (permitted under the simulated Alexa+ path) |
@@ -20,9 +20,22 @@
 | All materials in English | ✅ |
 | Free to test, no restriction, through the judging period | ✅ runs locally, no account needed on `echo` |
 
+Both done. Note `gh repo view --json licenseInfo` returns stale cache; the authoritative
+check is:
+
 ```bash
-gh repo edit kishormorol/alexa-language-bridge --visibility public
-gh repo view kishormorol/alexa-language-bridge --json licenseInfo
+gh api repos/kishormorol/alexa-language-bridge/license --jq .license.spdx_id
+```
+
+**History note:** the AWS account id appears in seven early commits of
+`docs/submission-checklist.md`. It is gone from the current version. Account ids are
+not secrets — they appear in every ARN — so this is housekeeping, not an exposure. To
+scrub it anyway:
+
+```bash
+FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch -f --tree-filter \
+  'test -f docs/submission-checklist.md && sed -i "" "s/[0-9]\{12\}/the hackathon AWS account/g" docs/submission-checklist.md || true' -- --all
+git push --force origin main
 ```
 
 ## Stage 2 — scored fields
@@ -48,7 +61,6 @@ gh repo view kishormorol/alexa-language-bridge --json licenseInfo
 | ~~Bedrock model access~~ | — | **Done 14 Sep.** Haiku 4.5 live; every demo beat works on real translation |
 | **Join the hackathon on Devpost** | Kishor | Gates the credits form and the submission itself |
 | **AWS promotional credits form** | Kishor | Needs Devpost registration first. "While supplies last" against 6,000+ entrants |
-| **Make the repo public** | Kishor | Stage 1 pass/fail. `gh repo edit --visibility public` |
 | **Record the demo video** | Kishor | Three of four scoring criteria. Script in `docs/video-script.md`; shootable today |
 
 ## Day-of
