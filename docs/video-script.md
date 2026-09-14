@@ -59,7 +59,8 @@ As **Ma**, `bati nibhiye dao`.
 calling it what she calls it."
 
 **Beat 5 — they talk to each other (1:20)**
-As **Ma**, `tell Rafi that dinner is ready`. Switch to **Rafi**, `my messages`.
+As **Ma**, `tell Rafi that ranna hoye geche`. Switch to **Rafi**, `my messages`.
+*He reads "The food is cooked."*
 
 **VO:** "She leaves him a message. He gets it in English, whenever he next asks."
 
@@ -81,7 +82,7 @@ design, and it's why she isn't a second-class user of her own home."
 host. Language identity persists across sessions, so the device remembers who speaks
 what."
 
-**On screen:** `70 tests · MCP 2025-11-25 · OAuth 2.1 + PKCE · MCP Apps`
+**On screen:** `73 tests · MCP 2025-11-25 · OAuth 2.1 + PKCE · MCP Apps`
 
 ---
 

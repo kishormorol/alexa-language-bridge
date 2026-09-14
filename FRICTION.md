@@ -26,6 +26,18 @@ Each entry needs all six fields. Severity: Blocker / Major / Minor.
 ## Entries
 
 <!-- newest first -->
+### FL-007 — Haiku 4.5 argues with itself in the reply, and the argument is the product
+
+- **Date:** 2026-09-14
+- **Tool / SDK / API:** Amazon Bedrock (`bedrock-runtime`) · `us.anthropic.claude-haiku-4-5-20251001-v1:0` · `@anthropic-ai/bedrock-sdk` 0.33.5
+- **Task attempted:** Carry one short household sentence between two languages, where the source label is unreliable. A member is registered as `bn-BD` but types "dinner is ready" in English, so the request asks for Bangla into English over text that is already English. The system prompt says to reply with the translation alone and to return text unchanged when it is already in the target language.
+- **Steps taken:** `messages.create` with a cached system prompt and a one-line user turn: `Carry this from Bangla into English.\n\ndinner is ready`. Four trials, `max_tokens: 1024`, no `output_config`.
+- **Expected result:** `dinner is ready`, unchanged, per the rule in the system prompt.
+- **Actual result:** Three of four trials returned the model's deliberation as the answer, in one text block with no structure to separate it: `রান্না হয়ে গেছে\n\nWait, I need to reconsider. You've given me English text ("dinner is ready") and asked me to carry it from Bangla into English. Following my instructions: "If the text is already in the target language, reply with it unchanged."\n\nThe text is already in English (the target language), so:\n\ndinner is ready`. The fourth returned `Khana ready ho gese.` — clean, but neither English nor the original. So 0 of 4 were usable. The correct answer is present in the leaked ones, but at the end, after the wrong one, so no "take the first line" rule recovers it. Downstream this is spoken aloud in a home and cached, so one bad generation is served forever.
+- **Severity:** Major
+- **Workaround used:** Three changes together. Stop asserting the direction in the user turn — offer the source label as the guess it is, since the contradiction between "carry this from Bangla" and "trust the text over the label" is what set the model arguing. Prefill the assistant turn with an opening `<t>` so the reply starts inside the answer. Set `</t>` as a stop sequence so anything after the answer is never generated or billed. A reply that still arrives with a newline in it is refused rather than spoken. After: 4 of 4 clean and correct, and the ordinary translation path is unchanged.
+- **Actionable suggestion:** Two. The model should decide before it answers rather than emitting a wrong answer and correcting it in the same block — self-correction is right, but it belongs in thinking, not in the reply, and a caller has no way to tell the two apart when both arrive as `type: "text"`. And the failure is specifically about *conflicting* instructions, which every real prompt eventually has: a rule in the system prompt versus an imperative in the user turn. Guidance on which wins, or a strict output-format parameter for short-answer use, would have saved a day of finding this by accident — which is how it was found, with the demo recording it.
+
 ### FL-006 — Bedrock model ids need an inference-profile prefix, and the error does not say which
 
 - **Date:** 2026-09-14

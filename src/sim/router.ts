@@ -59,6 +59,29 @@ function payload(utterance: string, matched: readonly RegExp[]): string {
   return out.replace(/\s+/g, ' ').trim();
 }
 
+/**
+ * "tell me ..." is not a message to anyone — it is how people ask the house for
+ * something, and it must fall through to the command rules.
+ */
+const SELF = /^(me|amake|ami|nijeke)$/i;
+
+/** A message addressed to another member, or null if this is not one. */
+function addressed(utterance: string, speaker: string, householdId: string): Intent | null {
+  for (const pattern of VERBS.tell) {
+    const match = pattern.exec(utterance);
+    const to = match?.[1];
+    if (!match || !to || SELF.test(to)) continue;
+    const message = utterance
+      .slice(match.index + match[0].length)
+      .replace(/^\s*(that|ke|je)\s*/i, '')
+      .trim();
+    if (message !== '') {
+      return { tool: 'leave_message', arguments: { householdId, from: speaker, to, message } };
+    }
+  }
+  return null;
+}
+
 export class RuleRouter implements Router {
   readonly name = 'rules';
 
@@ -68,6 +91,14 @@ export class RuleRouter implements Router {
     if (any(VERBS.messages, utterance)) return { tool: 'get_messages', arguments: { householdId, member: speaker } };
     if (any(VERBS.reminders, utterance)) return { tool: 'get_reminders', arguments: base };
     if (any(VERBS.readList, utterance)) return { tool: 'read_list', arguments: base };
+
+    // Before any of the command rules. Everything after "tell Rafi" is quoted
+    // speech, not an instruction to the house: "tell Rafi that ranna hoye geche" is
+    // a message that happens to contain the words for "it's cooked", and testing
+    // the command verbs first hears it as ticking something off a list. Whoever the
+    // message is about, the addressing is the stronger signal.
+    const message = addressed(utterance, speaker, householdId);
+    if (message) return message;
 
     if (any(VERBS.off, utterance) || any(VERBS.on, utterance)) {
       const off = any(VERBS.off, utterance);
@@ -93,20 +124,6 @@ export class RuleRouter implements Router {
         tool: 'set_reminder',
         arguments: { ...base, ...forMember, reminder: payload(utterance, VERBS.remind), dueAt: due },
       };
-    }
-
-    for (const pattern of VERBS.tell) {
-      const match = pattern.exec(utterance);
-      const to = match?.[1];
-      if (match && to) {
-        const message = utterance
-          .slice(match.index + match[0].length)
-          .replace(/^\s*(that|ke)\s*/i, '')
-          .trim();
-        if (message !== '') {
-          return { tool: 'leave_message', arguments: { householdId, from: speaker, to, message } };
-        }
-      }
     }
 
     if (any(VERBS.add, utterance)) {

@@ -73,3 +73,25 @@ describe('RuleRouter word order', () => {
     expect(intent?.arguments['message']).toBe('dinner is ready');
   });
 });
+
+describe('RuleRouter addressed speech', () => {
+  it('carries a message whose words are also a command', async () => {
+    // "hoye geche" is how the demo ticks something off a list, so this used to
+    // answer 'Nothing on the shopping list matches "tell Rafi that ranna"'.
+    const intent = await route('tell Rafi that ranna hoye geche');
+    expect(intent?.tool).toBe('leave_message');
+    expect(intent?.arguments['to']).toBe('Rafi');
+    expect(intent?.arguments['message']).toBe('ranna hoye geche');
+  });
+
+  it('does not act on a command quoted inside a message', async () => {
+    const intent = await route('Rafi ke bolo je bati nibhiye dao');
+    expect(intent?.tool).toBe('leave_message');
+    expect(intent?.arguments['message']).toBe('bati nibhiye dao');
+  });
+
+  it('treats "tell me" as asking the house, not messaging anyone', async () => {
+    const intent = await route('tell me the milk is done');
+    expect(intent?.tool).toBe('complete_list_item');
+  });
+});

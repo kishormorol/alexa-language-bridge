@@ -174,7 +174,7 @@ two days — it carries Design and Impact almost by itself.
 
 ## Tests
 
-70 green: store persistence and isolation, render caching, an end-to-end MCP
+73 green: store persistence and isolation, render caching, an end-to-end MCP
 client/server round trip over Streamable HTTP, and the cross-language household
 scenarios — Ma ticking off an item her son added in English, a reminder crossing
 languages, a device matched by whatever she calls it, and an ambiguous name asking
