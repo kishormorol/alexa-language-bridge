@@ -83,8 +83,10 @@ directly. Four conformance tests cover it.
 
 ### 6. Bedrock + deploy + latency pass — provider written 14 Sep
 `src/lang/bedrock.ts` is written and unit-tested against an injected client: Claude
-on Bedrock through the Mantle client, frozen cached system prompt, `effort: low`.
-It activates with `LANGUAGE_PROVIDER=bedrock` and nothing else changes.
+Haiku 4.5 on the `bedrock-runtime` endpoint, a frozen cached system prompt, no
+`effort` (Haiku 4.5 rejects it), and the reply delimited by a prefilled tag and a
+stop sequence (FL-007). It activates with `LANGUAGE_PROVIDER=bedrock` and nothing
+else changes.
 
 A content-addressed translation cache (`src/lang/cache.ts`) fronts any provider,
 with shared in-flight calls and no disk write on a hit. `npm run bench` measures
@@ -100,13 +102,19 @@ via `put-use-case-for-model-access`, and `anthropic.claude-haiku-4-5-20251001-v1
 reachable through the `bedrock-runtime` endpoint. Opus 5 and Sonnet 4.5 report
 `NOT_AVAILABLE` on this account; Mantle returns 403 — it needs its own entitlement.
 
-**Measured latency** (`npm run bench`, real Bedrock):
+**Measured latency** (`npm run bench`, real Bedrock, re-run 14 Sep on the delimited
+provider — four runs, 40 cold calls):
 
 | | p50 | p95 |
 | --- | --- | --- |
-| Cold (model call) | 635 ms | 987 ms |
-| Warm (cache hit) | 1 ms | 4 ms |
-| Local (no model) | 1 ms | 2 ms |
+| Cold (model call) | 647–732 ms | 839–1007 ms |
+| Warm (cache hit) | 1 ms | 2–4 ms |
+| Local (no model) | 1 ms | 1 ms |
+
+Ranges are across runs. Each run makes only 10 cold calls, so its p95 is really its
+slowest call; read the top of that range as "about a second, sometimes". The prefill
+and stop sequence cost nothing measurable — the first measurement, before them, was
+635 ms / 987 ms.
 
 Cold is over the 500 ms budget; warm is nowhere near it.
 
