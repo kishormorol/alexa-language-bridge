@@ -12,6 +12,10 @@ becomes one she uses herself.
 Nothing in the house is stored in English and translated for her. Everything is
 stored as spoken, and rendered for whoever is asking.
 
+Script is part of who a person is, not something to guess per message. Plenty of
+people speak Bangla or Hindi and read it in Latin letters — `bati`, not `বাতি`. Get
+that wrong and the reply is one they cannot read, or match against what they said.
+
 > Status: early development. Built for the Build, Ship, Shape: Amazon Developer
 > Hackathon (Alexa+ track), submission window 31 Aug – 23 Oct 2026.
 
@@ -93,7 +97,7 @@ Set `AUTH_ENABLED=false` for local iteration only.
 
 | Tool | What it does |
 | --- | --- |
-| `register_household_member` | Record a person and the language they speak |
+| `register_household_member` | Record a person, the language they speak, and the script they write it in |
 | `list_household_members` | Who is in the household, and in what language |
 
 **Getting things done**

@@ -39,8 +39,10 @@ export class CachingLanguageProvider implements LanguageProvider {
     return `${this.#inner.name}+cache`;
   }
 
-  static key({ text, from, to }: TranslateRequest): string {
-    return createHash('sha256').update(`${from ?? ''}|${to}|${text}`).digest('hex');
+  static key({ text, from, to, context, toScript }: TranslateRequest): string {
+    return createHash('sha256')
+      .update(`${from ?? ''}|${to}|${toScript ?? ''}|${context ?? ''}|${text}`)
+      .digest('hex');
   }
 
   async translate(req: TranslateRequest): Promise<TranslateResult> {

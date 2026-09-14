@@ -13,6 +13,8 @@ export async function renderInto(
   original: Rendering,
   existing: readonly Rendering[],
   target: LanguageTag,
+  context?: string,
+  toScript?: import('../domain/types.js').Script,
 ): Promise<{ rendering: Rendering; cached: boolean }> {
   const hit = existing.find((r) => r.language === target);
   if (hit) return { rendering: hit, cached: true };
@@ -21,6 +23,8 @@ export async function renderInto(
     text: original.text,
     from: original.language,
     to: target,
+    ...(context === undefined ? {} : { context }),
+    ...(toScript === undefined ? {} : { toScript }),
   });
   return { rendering: { language: target, text }, cached: false };
 }

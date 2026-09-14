@@ -7,7 +7,7 @@ function stub(blocks: unknown[]) {
 }
 
 const provider = (client: MessagesClient) =>
-  new BedrockLanguageProvider({ region: 'us-west-2', model: 'anthropic.claude-haiku-4-5', client });
+  new BedrockLanguageProvider({ region: 'us-west-2', model: 'us.anthropic.claude-haiku-4-5-20251001-v1:0', client });
 
 describe('BedrockLanguageProvider', () => {
   it('does not call the model when source and target already match', async () => {
@@ -26,7 +26,7 @@ describe('BedrockLanguageProvider', () => {
     expect(result.detectedLanguage).toBe('bn-BD');
   });
 
-  it('sends a cached system prompt and low effort, for the latency budget', async () => {
+  it('sends a cached system prompt and omits effort, which Haiku 4.5 rejects', async () => {
     const { client, create } = stub([{ type: 'text', text: 'rice' }]);
     await provider(client).translate({ text: 'chal', from: 'bn-BD', to: 'en-US' });
 
@@ -35,10 +35,24 @@ describe('BedrockLanguageProvider', () => {
       output_config?: { effort?: string };
       system: { cache_control?: { type: string } }[];
     };
-    // The Mantle endpoint takes a bare id; bedrock-runtime takes a profile id.
-    expect(request.model).toBe('anthropic.claude-haiku-4-5');
-    expect(request.output_config?.effort).toBe('low');
+    // bedrock-runtime takes the inference-profile id; Mantle takes a bare one.
+    expect(request.model).toBe('us.anthropic.claude-haiku-4-5-20251001-v1:0');
+    expect(request.output_config).toBeUndefined();
     expect(request.system[0]?.cache_control?.type).toBe('ephemeral');
+  });
+
+  it('sends effort only when one is configured', async () => {
+    const { client, create } = stub([{ type: 'text', text: 'rice' }]);
+    const withEffort = new BedrockLanguageProvider({
+      region: 'us-west-2',
+      model: 'us.anthropic.claude-opus-5',
+      effort: 'low',
+      client,
+    });
+    await withEffort.translate({ text: 'chal', from: 'bn-BD', to: 'en-US' });
+
+    const request = create.mock.calls[0]?.[0] as { output_config?: { effort?: string } };
+    expect(request.output_config?.effort).toBe('low');
   });
 
   it('names both languages in the request so the model knows the direction', async () => {

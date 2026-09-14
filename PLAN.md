@@ -94,8 +94,33 @@ Deployment settled on a container, not Lambda: Streamable HTTP holds per-session
 state and an SSE stream, and the OAuth server holds tokens in memory. `Dockerfile`
 builds and runs green with OAuth enforced. See `docs/deployment.md`.
 
-**Still blocked on Bedrock model access** — the provider has never touched the real
-service, so latency is unmeasured and the model choice unvalidated.
+**Bedrock is live as of 14 Sep.** Account verified, Anthropic use-case form submitted
+via `put-use-case-for-model-access`, and `anthropic.claude-haiku-4-5-20251001-v1:0`
+reachable through the `bedrock-runtime` endpoint. Opus 5 and Sonnet 4.5 report
+`NOT_AVAILABLE` on this account; Mantle returns 403 — it needs its own entitlement.
+
+**Measured latency** (`npm run bench`, real Bedrock):
+
+| | p50 | p95 |
+| --- | --- | --- |
+| Cold (model call) | 635 ms | 987 ms |
+| Warm (cache hit) | 1 ms | 4 ms |
+| Local (no model) | 1 ms | 2 ms |
+
+Cold is over the 500 ms budget; warm is not close to it. The cache removes 100% of
+the cost at p50. Remaining options if cold matters: pre-warm the household's common
+phrases at registration, or accept that the first utterance of a new phrase is slow
+and every repeat is instant.
+
+**Three real bugs surfaced only once a real model was behind the interface** — none
+were visible with the echo provider:
+1. `chal` translated as "come on" rather than "rice". Fixed by passing what kind of
+   thing is being translated (list item, device name, message).
+2. Renderings came back in Bangla script for a reader who types romanised. Fixed by
+   making script a property of the member, not a guess per message.
+3. A message Ma typed in English, stored under her `bn-BD` label, was translated
+   *into* Bangla for an English reader. Fixed by telling the model the source label
+   is a guess and to trust the text.
 
 ### 7. Upstream PR — DONE 14 Sep
 `modelcontextprotocol/typescript-sdk`, backporting the accepted `Transport` type
@@ -132,7 +157,7 @@ two days — it carries Design and Impact almost by itself.
 
 ## Tests
 
-52 green: store persistence and isolation, render caching, an end-to-end MCP
+57 green: store persistence and isolation, render caching, an end-to-end MCP
 client/server round trip over Streamable HTTP, and the cross-language household
 scenarios — Ma ticking off an item her son added in English, a reminder crossing
 languages, a device matched by whatever she calls it, and an ambiguous name asking

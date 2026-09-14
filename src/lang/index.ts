@@ -11,7 +11,9 @@ function createInner(): LanguageProvider {
       return new BedrockLanguageProvider({
         region: config.awsRegion,
         model: config.bedrockModelId,
+        endpoint: config.bedrockEndpoint === 'mantle' ? 'mantle' : 'runtime',
         profile: config.awsProfile,
+        ...(config.bedrockEffort ? { effort: config.bedrockEffort } : {}),
       });
     default:
       throw new Error(`Unknown LANGUAGE_PROVIDER "${config.languageProvider}"`);

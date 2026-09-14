@@ -1,9 +1,19 @@
 import type { LanguageTag } from '../domain/languages.js';
+import type { Script } from '../domain/types.js';
 
 export interface TranslateRequest {
   text: string;
   to: LanguageTag;
   from?: LanguageTag;
+  /**
+   * What kind of thing this is — "an item on a household shopping list", "the name
+   * of a device in the home". Short household utterances are badly ambiguous without
+   * it: romanized Bangla `chal` is both "rice" and "come on", and a translator with
+   * no context picks wrong about half the time.
+   */
+  context?: string;
+  /** Which writing system the reader uses for their language. */
+  toScript?: Script;
 }
 
 export interface TranslateResult {

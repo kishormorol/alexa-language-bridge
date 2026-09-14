@@ -1,9 +1,18 @@
 import type { LanguageTag } from './languages.js';
 
+/**
+ * How someone writes their language. Plenty of people speak Bangla or Hindi but
+ * type and read it in Latin letters — "bati", not "বাতি". Treating that as a
+ * property of the person, rather than something to infer per message, is what
+ * makes matching work: they can only recognise what they would have typed.
+ */
+export type Script = 'native' | 'latin';
+
 export interface Member {
   id: string;
   name: string;
   language: LanguageTag;
+  script: Script;
   createdAt: string;
 }
 

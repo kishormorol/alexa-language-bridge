@@ -17,6 +17,10 @@ import {
   type ToolDeps,
 } from './shared.js';
 
+const LIST_CTX = 'an item on a household shopping or to-do list — a thing you buy or do';
+const REMINDER_CTX = 'a reminder one member of a household set for another';
+const DEVICE_CTX = 'the name a household uses for a device in the home, such as a light or a fan';
+
 const listName = z
   .string()
   .min(1)
@@ -58,10 +62,11 @@ async function lines(
   items: readonly Utterance[],
   reader: Member,
   prefix: (index: number) => string,
+  ctx?: string,
 ): Promise<string> {
   const out: string[] = [];
   for (const [index, item] of items.entries()) {
-    const rendered = await forMember(language, item, reader);
+    const rendered = await forMember(language, item, reader, ctx);
     out.push(`${prefix(index)}${rendered.text}`);
   }
   return out.join('\n');
@@ -128,11 +133,11 @@ export function registerHomeTools(server: McpServer, { store, language }: ToolDe
         return text(`The ${list} list is empty.${hint}`);
       }
 
-      const body = await lines(language, items, person, (i) => `${i + 1}. `);
+      const body = await lines(language, items, person, (i) => `${i + 1}. `, LIST_CTX);
 
       const rendered: { text: string; done: boolean }[] = [];
       for (const item of items) {
-        const r = await forMember(language, item, person);
+        const r = await forMember(language, item, person, LIST_CTX);
         rendered.push({ text: r.text, done: item.doneAt !== null });
       }
       await store.save();
@@ -176,7 +181,7 @@ export function registerHomeTools(server: McpServer, { store, language }: ToolDe
       if (matches.length === 0) return failure(`Nothing on the ${list} list matches "${item}".`);
 
       const closed = await store.completeListItems(hid, list, matches.map((m) => m.id));
-      const body = await lines(language, closed, person, () => '✓ ');
+      const body = await lines(language, closed, person, () => '✓ ', LIST_CTX);
       await store.save();
       return text(body);
     },
@@ -224,7 +229,7 @@ export function registerHomeTools(server: McpServer, { store, language }: ToolDe
       };
       await store.addReminder(hid, record);
 
-      const delivered = await forMember(language, utterance, recipient);
+      const delivered = await forMember(language, utterance, recipient, REMINDER_CTX);
       await store.save();
       return text(`Reminder set for ${recipient.name}: ${delivered.text}`);
     },
@@ -249,7 +254,7 @@ export function registerHomeTools(server: McpServer, { store, language }: ToolDe
       const due = await store.remindersFor(hid, person.id, includeDone);
       if (due.length === 0) return text(`No reminders for ${person.name}.`);
 
-      const body = await lines(language, due, person, (i) => `${i + 1}. `);
+      const body = await lines(language, due, person, (i) => `${i + 1}. `, REMINDER_CTX);
       await store.save();
       return text(body);
     },
@@ -311,13 +316,13 @@ export function registerHomeTools(server: McpServer, { store, language }: ToolDe
 
       // Make sure every device is known in the asker's language before matching,
       // so "bati" finds the light their son registered as "lamp".
-      for (const d of all) await forMember(language, d.label, person);
+      for (const d of all) await forMember(language, d.label, person, DEVICE_CTX);
       await store.save();
 
       const matches = all.filter((d) => mentions(d.label, device) || d.room.toLowerCase() === device.toLowerCase());
       if (matches.length === 0) return failure(`Nothing in the house matches "${device}".`);
       if (matches.length > 1) {
-        const names = await lines(language, matches.map((m) => m.label), person, () => '- ');
+        const names = await lines(language, matches.map((m) => m.label), person, () => '- ', DEVICE_CTX);
         return failure(`That matches more than one thing:\n${names}`);
       }
 
@@ -325,7 +330,7 @@ export function registerHomeTools(server: McpServer, { store, language }: ToolDe
       const updated = await store.setDeviceState(hid, target.id, state, person.id);
       if (!updated) return failure('That device disappeared while we were looking at it.');
 
-      const label = await forMember(language, updated.label, person);
+      const label = await forMember(language, updated.label, person, DEVICE_CTX);
       return text(`${label.text} (${updated.room}) is now ${updated.state}.`);
     },
   );

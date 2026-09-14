@@ -138,3 +138,17 @@ describe('CachingLanguageProvider', () => {
     expect((await cache.translate(req)).text).toBe('chal:en-US');
   });
 });
+
+describe('CachingLanguageProvider keying', () => {
+  it('keys on context and script, so the same word can render differently', async () => {
+    const inner = new CountingProvider();
+    const cache = new CachingLanguageProvider(inner, null);
+    const base = { text: 'chal', from: 'bn-BD', to: 'en-US' } as const;
+
+    await cache.translate({ ...base });
+    await cache.translate({ ...base, context: 'a shopping list item' });
+    await cache.translate({ ...base, context: 'a shopping list item', toScript: 'latin' });
+
+    expect(inner.calls).toBe(3);
+  });
+});

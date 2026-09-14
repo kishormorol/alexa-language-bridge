@@ -1,5 +1,6 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { languageName } from '../domain/languages.js';
+import { z } from 'zod';
 import { householdId, languageTag, memberRef, text, type ToolDeps } from './shared.js';
 
 export function registerPeopleTools(server: McpServer, { store }: ToolDeps): void {
@@ -13,12 +14,21 @@ export function registerPeopleTools(server: McpServer, { store }: ToolDeps): voi
         householdId,
         name: memberRef('What the household calls this person, e.g. "Ma".'),
         language: languageTag.describe('BCP-47 tag of the language this person speaks.'),
+        script: z
+          .enum(['native', 'latin'])
+          .default('native')
+          .describe(
+            'How they write that language. "latin" for someone who speaks Bangla or Hindi but types it in Latin letters — "bati", not "বাতি".',
+          ),
       },
       annotations: { readOnlyHint: false, idempotentHint: true },
     },
-    async ({ householdId: hid, name, language: tag }) => {
-      const member = await store.addMember(hid, name, tag);
-      return text(`${member.name} speaks ${languageName(member.language)} (${member.language}).`);
+    async ({ householdId: hid, name, language: tag, script }) => {
+      const member = await store.addMember(hid, name, tag, script);
+      const how = member.script === 'latin' ? ', written in Latin letters' : '';
+      return text(
+        `${member.name} speaks ${languageName(member.language)} (${member.language})${how}.`,
+      );
     },
   );
 
@@ -35,7 +45,11 @@ export function registerPeopleTools(server: McpServer, { store }: ToolDeps): voi
       if (house.members.length === 0) return text('Nobody is registered in this household yet.');
       return text(
         house.members
-          .map((m) => `- ${m.name} — ${languageName(m.language)} (${m.language})`)
+          .map(
+            (m) =>
+              `- ${m.name} — ${languageName(m.language)} (${m.language})` +
+              (m.script === 'latin' ? ', Latin letters' : ''),
+          )
           .join('\n'),
       );
     },

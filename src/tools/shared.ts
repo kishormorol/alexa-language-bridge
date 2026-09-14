@@ -51,12 +51,15 @@ export async function forMember(
   language: LanguageProvider,
   utterance: Utterance,
   member: Member,
+  context?: string,
 ): Promise<{ text: string; cached: boolean }> {
   const { rendering, cached } = await renderInto(
     language,
     utterance.original,
     utterance.renderings,
     member.language,
+    context,
+    member.script,
   );
   if (!cached && !utterance.renderings.some((r) => r.language === rendering.language)) {
     utterance.renderings.push(rendering);

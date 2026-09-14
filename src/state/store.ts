@@ -11,6 +11,7 @@ import type {
   Reminder,
 } from '../domain/types.js';
 import type { LanguageTag } from '../domain/languages.js';
+import type { Script } from '../domain/types.js';
 
 /**
  * File-backed household store.
@@ -65,17 +66,25 @@ export class HouseholdStore {
       await this.#persist();
     }
     // Households written by an earlier schema are missing the newer collections.
+    // Members written by an earlier schema have no script.
+    for (const member of found.members) member.script ??= 'native';
     found.lists ??= {};
     found.reminders ??= [];
     found.devices ??= [];
     return found;
   }
 
-  async addMember(householdId: string, name: string, language: LanguageTag): Promise<Member> {
+  async addMember(
+    householdId: string,
+    name: string,
+    language: LanguageTag,
+    script: Script = 'native',
+  ): Promise<Member> {
     const house = await this.household(householdId);
     const existing = house.members.find((m) => m.name.toLowerCase() === name.toLowerCase());
     if (existing) {
       existing.language = language;
+      existing.script = script;
       await this.#persist();
       return existing;
     }
@@ -83,6 +92,7 @@ export class HouseholdStore {
       id: randomUUID(),
       name,
       language,
+      script,
       createdAt: new Date().toISOString(),
     };
     house.members.push(member);

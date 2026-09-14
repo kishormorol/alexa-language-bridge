@@ -2,6 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { languageName } from '../domain/languages.js';
+const MESSAGE_CTX = 'a spoken message between members of one household';
+
 import { HOUSEHOLD_CARD_URI } from '../apps/household-card.js';
 import { uiMeta } from '../apps/contract.js';
 import type { Message } from '../domain/types.js';
@@ -39,7 +41,7 @@ export function registerMessageTools(server: McpServer, { store, language }: Too
       if (sender.id === recipient.id) return failure('A message needs a different sender and recipient.');
 
       const utterance = spoken(sender, message);
-      const delivered = await forMember(language, utterance, recipient);
+      const delivered = await forMember(language, utterance, recipient, MESSAGE_CTX);
 
       const record: Message = {
         id: randomUUID(),
@@ -83,7 +85,7 @@ export function registerMessageTools(server: McpServer, { store, language }: Too
 
       const lines: string[] = [];
       for (const msg of waiting) {
-        const rendered = await forMember(language, msg, person);
+        const rendered = await forMember(language, msg, person, MESSAGE_CTX);
         lines.push(`From ${nameOf(msg.fromMemberId)}: ${rendered.text}`);
       }
       await store.save();
@@ -115,7 +117,7 @@ export function registerMessageTools(server: McpServer, { store, language }: Too
       if (!to) return unknownMember(listener);
 
       const said = spoken(from, utterance);
-      const heard = await forMember(language, said, to);
+      const heard = await forMember(language, said, to, MESSAGE_CTX);
       return {
         ...text(
           `${from.name} (${languageName(from.language)}): ${utterance}\n` +

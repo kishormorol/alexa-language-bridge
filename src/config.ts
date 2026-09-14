@@ -23,15 +23,14 @@ export const config = {
   translationCachePath: process.env['TRANSLATION_CACHE_PATH'] ?? '.state/translations.json',
   awsRegion: process.env['AWS_REGION'] ?? 'us-west-2',
   /**
-   * Bedrock model id, in the form the **Mantle** endpoint expects — bare
-   * `anthropic.<model>`, no version suffix and no inference-profile prefix.
-   *
-   * The two Bedrock endpoints disagree, so this is easy to get wrong:
-   *   bedrock-mantle   anthropic.claude-haiku-4-5
-   *   bedrock-runtime  us.anthropic.claude-haiku-4-5-20251001-v1:0
-   * On Mantle a 404 "does not exist" means the id is wrong; a 403 means the id is
-   * right and the account is not entitled yet. See FL-006.
+   * Which Bedrock endpoint to talk to. They are not interchangeable: different model
+   * id forms and separate account entitlements. See src/lang/bedrock.ts and FL-006.
    */
-  bedrockModelId: process.env['BEDROCK_MODEL_ID'] ?? 'anthropic.claude-haiku-4-5',
+  bedrockEndpoint: process.env['BEDROCK_ENDPOINT'] ?? 'runtime',
+  /** Model id, in the form the chosen endpoint expects. */
+  bedrockModelId:
+    process.env['BEDROCK_MODEL_ID'] ?? 'us.anthropic.claude-haiku-4-5-20251001-v1:0',
+  /** output_config.effort. Empty by default — Haiku 4.5 rejects it. */
+  bedrockEffort: process.env['BEDROCK_EFFORT'] ?? '',
   awsProfile: process.env['AWS_PROFILE'],
 } as const;

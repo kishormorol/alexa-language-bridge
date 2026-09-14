@@ -64,3 +64,30 @@ describe('HouseholdStore', () => {
     expect(await store.messagesFor('h1', son.id, true)).toHaveLength(2);
   });
 });
+
+describe('HouseholdStore script', () => {
+  it('records how a member writes their language', async () => {
+    await store.addMember('h1', 'Ma', 'bn-BD', 'latin');
+    expect((await store.findMember('h1', 'Ma'))?.script).toBe('latin');
+  });
+
+  it('defaults to the native script', async () => {
+    await store.addMember('h1', 'Rafi', 'en-US');
+    expect((await store.findMember('h1', 'Rafi'))?.script).toBe('native');
+  });
+
+  it('backfills script for members written by an earlier schema', async () => {
+    const house = await store.household('h2');
+    house.members.push({
+      id: 'legacy',
+      name: 'Dadu',
+      language: 'bn-BD',
+      createdAt: new Date().toISOString(),
+    } as never);
+    store.reset();
+    await store.flush();
+
+    const reloaded = await store.household('h2');
+    expect(reloaded.members.every((m) => m.script !== undefined)).toBe(true);
+  });
+});

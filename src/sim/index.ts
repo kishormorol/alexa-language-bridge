@@ -41,12 +41,18 @@ const host = new SimulatedHost(origin, createRouter(process.env['ROUTER'] ?? 'ru
 await host.connect();
 
 // Seed a household so the demo opens on something rather than nothing.
-const seed: [string, string][] = [
-  ['Ma', 'bn-BD'],
-  ['Rafi', 'en-US'],
+const seed: [string, string, 'native' | 'latin'][] = [
+  // Ma speaks Bangla but types it in Latin letters, as most of the diaspora does.
+  ['Ma', 'bn-BD', 'latin'],
+  ['Rafi', 'en-US', 'native'],
 ];
-for (const [name, lang] of seed) {
-  await host.call('register_household_member', { householdId: HOUSEHOLD, name, language: lang });
+for (const [name, language, script] of seed) {
+  await host.call('register_household_member', {
+    householdId: HOUSEHOLD,
+    name,
+    language,
+    script,
+  });
 }
 await host.call('register_device', {
   householdId: HOUSEHOLD,
