@@ -8,6 +8,7 @@ import { HouseholdOAuthProvider } from '../auth/provider.js';
 import { createRouter } from './router.js';
 import { SimulatedHost } from './host.js';
 import { SIM_UI } from './ui.js';
+import { prewarm } from '../lang/prewarm.js';
 
 const SIM_PORT = Number.parseInt(process.env['SIM_PORT'] ?? '4000', 10);
 const HOUSEHOLD = process.env['SIM_HOUSEHOLD'] ?? 'demo';
@@ -85,6 +86,31 @@ app.post('/api/say', async (req, res) => {
     res.status(500).json({ error: err instanceof Error ? err.message : String(err) });
   }
 });
+
+// Pay the first-utterance cost before anyone speaks. Cold translation is ~635 ms
+// against a 500 ms budget; a hit is ~1 ms. Opt-in, because it costs one model call
+// per phrase per direction at startup.
+if ((process.env['PREWARM'] ?? 'false') !== 'false') {
+  const house = await store.household(HOUSEHOLD);
+  const [a, b] = house.members;
+  if (a && b) {
+    const started = performance.now();
+    // Deliberately not awaited: the server should answer immediately and warm up
+    // behind the scenes. Anything asked before warming finishes simply pays the
+    // cold cost once.
+    void (async () => {
+      const forward = await prewarm(language, a, b);
+      const back = await prewarm(language, b, a);
+      console.log(
+        `[simulator] pre-warmed ${forward.warmed + back.warmed} phrases ` +
+          `(${forward.failed + back.failed} failed) in ${(performance.now() - started).toFixed(0)}ms`,
+      );
+      for (const message of new Set([...forward.errors, ...back.errors])) {
+        console.warn(`[simulator] pre-warm error: ${message}`);
+      }
+    })();
+  }
+}
 
 app.listen(SIM_PORT, () => {
   console.log(`[simulator] open http://localhost:${SIM_PORT}`);

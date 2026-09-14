@@ -107,10 +107,24 @@ reachable through the `bedrock-runtime` endpoint. Opus 5 and Sonnet 4.5 report
 | Warm (cache hit) | 1 ms | 4 ms |
 | Local (no model) | 1 ms | 2 ms |
 
-Cold is over the 500 ms budget; warm is not close to it. The cache removes 100% of
-the cost at p50. Remaining options if cold matters: pre-warm the household's common
-phrases at registration, or accept that the first utterance of a new phrase is slow
-and every repeat is instant.
+Cold is over the 500 ms budget; warm is nowhere near it.
+
+Pre-warming (`src/lang/prewarm.ts`, `PREWARM=true`) translates ~20 common household
+phrases in both directions at startup — 80 cache entries, ~23 s in the background,
+without blocking the server. It has to warm the round trip: the phrase list is in
+English, and warming only English-to-Bangla would help the English speaker and
+nobody else.
+
+**What that does and does not fix, honestly.** A phrase the household has said
+before is ~5 ms. A phrase nobody has said before still costs ~650 ms, and no amount
+of warming changes that — the list cannot contain every sentence. So the 500 ms
+budget is met for repeats and missed for novel utterances. Since a kitchen repeats
+itself constantly, that is the right trade, but the submission should say it plainly
+rather than quote the warm number alone.
+
+Bedrock on a new account rate-limits: 40 rapid calls returned `429 Too many
+requests` even though 8 concurrent succeed. The limit is per minute, not
+concurrency. Warming now runs two at a time with backoff, in the background.
 
 **Three real bugs surfaced only once a real model was behind the interface** — none
 were visible with the echo provider:

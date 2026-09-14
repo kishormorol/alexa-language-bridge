@@ -25,7 +25,13 @@ const VERBS = {
   reminders: [/\bmy reminders\b/i, /\bwhat.*remind/i],
   on: [/\bturn on\b/i, /\bswitch on\b/i, /\bjaliye\b/i],
   off: [/\bturn off\b/i, /\bswitch off\b/i, /\bnibhiye\b/i, /\bbondho kor/i],
-  tell: [/\btell\b\s+(\w+)/i, /\bmessage\b\s+(?:for|to)\s+(\w+)/i, /\bbolo\b/i],
+  // English puts the recipient after the verb, Bangla before it: "tell Rafi ..."
+  // versus "Rafi ke bolo ...". Both shapes capture the name in group 1.
+  tell: [
+    /\btell\b\s+(\w+)/i,
+    /\bmessage\b\s+(?:for|to)\s+(\w+)/i,
+    /\b(\w+)\s+ke\s+bolo\b/i,
+  ],
   messages: [/\bmy messages\b/i, /\banything for me\b/i, /\bkichu ache\b/i],
 } as const;
 
@@ -91,10 +97,13 @@ export class RuleRouter implements Router {
 
     for (const pattern of VERBS.tell) {
       const match = pattern.exec(utterance);
-      if (match) {
-        const to = match[1];
-        if (to) {
-          const message = utterance.slice(match.index + match[0].length).replace(/^\s*(that|ke)\s*/i, '').trim();
+      const to = match?.[1];
+      if (match && to) {
+        const message = utterance
+          .slice(match.index + match[0].length)
+          .replace(/^\s*(that|ke)\s*/i, '')
+          .trim();
+        if (message !== '') {
           return { tool: 'leave_message', arguments: { householdId, from: speaker, to, message } };
         }
       }

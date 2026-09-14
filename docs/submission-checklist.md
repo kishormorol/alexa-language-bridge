@@ -44,7 +44,7 @@ gh repo view kishormorol/alexa-language-bridge --json licenseInfo
 
 | Item | Owner | Why it matters |
 | --- | --- | --- |
-| **Bedrock model access** — `304118843563`, `us-west-2` | Kishor | The video is not shootable without it. On `echo` the demo shows `[en-US] chal` instead of `rice`, and the lamp beat fails outright. **Longest-lead item on the board.** |
+| **Bedrock model access** — hackathon AWS account, `us-west-2` | Kishor | The video is not shootable without it. On `echo` the demo shows `[en-US] chal` instead of `rice`, and the lamp beat fails outright. **Longest-lead item on the board.** |
 | AWS promotional credits form | Kishor | Deadline 21 Oct, but "while supplies last" against 6,000+ entrants |
 | Deploy + latency measurement under 500 ms | — | Follows Bedrock access |
 | Demo video | — | Follows Bedrock access |

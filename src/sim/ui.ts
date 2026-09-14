@@ -79,7 +79,7 @@ export const SIM_UI = String.raw`<!doctype html>
   let members = [];
 
   const HINTS = {
-    Ma: ['chal add koro', 'list ta porho', 'bati nibhiye dao', 'tell Rafi that dinner is ready'],
+    Ma: ['chal add koro', 'list ta porho', 'bati nibhiye dao', 'Rafi ke bolo khabar ready'],
     Rafi: ["what's on the list", 'add milk to the list', 'my messages', 'turn on the lamp'],
   };
 

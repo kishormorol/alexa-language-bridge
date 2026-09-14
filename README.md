@@ -151,8 +151,18 @@ the model. Identical concurrent misses share one in-flight call, and a cache hit
 no disk write, because that is the hot path of a 500 ms budget.
 
 ```bash
-npm run bench    # cold vs warm round-trip latency against the 500 ms budget
+npm run bench                 # cold vs warm round-trip latency
+PREWARM=true npm run sim      # warm the common phrases at startup
 ```
+
+| | p50 |
+| --- | --- |
+| A phrase the household has said before | ~5 ms |
+| A phrase nobody has said before | ~650 ms |
+
+The 500 ms budget is met for repeats and missed for novel utterances. Pre-warming
+covers the phrases a kitchen actually repeats; it cannot cover every sentence, and
+the numbers above say so rather than quoting the flattering one.
 
 Server overhead measured at 1–3 ms per tool round trip, so effectively the whole
 budget is available to the model. Deployment notes: [docs/deployment.md](docs/deployment.md).

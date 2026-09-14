@@ -58,3 +58,18 @@ describe('RuleRouter article handling', () => {
     expect(intent?.arguments['device']).toBe('lamp');
   });
 });
+
+describe('RuleRouter word order', () => {
+  it('finds the recipient when the name precedes the verb, as in Bangla', async () => {
+    const intent = await route('Rafi ke bolo khabar ready');
+    expect(intent?.tool).toBe('leave_message');
+    expect(intent?.arguments['to']).toBe('Rafi');
+    expect(intent?.arguments['message']).toBe('khabar ready');
+  });
+
+  it('still finds it when the name follows the verb, as in English', async () => {
+    const intent = await route('tell Rafi that dinner is ready', 'Ma');
+    expect(intent?.arguments['to']).toBe('Rafi');
+    expect(intent?.arguments['message']).toBe('dinner is ready');
+  });
+});
