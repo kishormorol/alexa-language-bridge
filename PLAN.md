@@ -85,9 +85,17 @@ directly. Four conformance tests cover it.
 on Bedrock through the Mantle client, frozen cached system prompt, `effort: low`.
 It activates with `LANGUAGE_PROVIDER=bedrock` and nothing else changes.
 
-**Blocked on Bedrock model access** in the hackathon account — until then it cannot
-be exercised against the real service, so the latency numbers are unmeasured and
-the model choice is unvalidated. Deploy and the latency pass follow that.
+A content-addressed translation cache (`src/lang/cache.ts`) fronts any provider,
+with shared in-flight calls and no disk write on a hit. `npm run bench` measures
+cold vs warm against the budget; server overhead is **1–3 ms**, so the whole budget
+belongs to the model.
+
+Deployment settled on a container, not Lambda: Streamable HTTP holds per-session
+state and an SSE stream, and the OAuth server holds tokens in memory. `Dockerfile`
+builds and runs green with OAuth enforced. See `docs/deployment.md`.
+
+**Still blocked on Bedrock model access** — the provider has never touched the real
+service, so latency is unmeasured and the model choice unvalidated.
 
 ### 7. Upstream PR — DONE 14 Sep
 `modelcontextprotocol/typescript-sdk`, backporting the accepted `Transport` type
@@ -124,7 +132,7 @@ two days — it carries Design and Impact almost by itself.
 
 ## Tests
 
-44 green: store persistence and isolation, render caching, an end-to-end MCP
+52 green: store persistence and isolation, render caching, an end-to-end MCP
 client/server round trip over Streamable HTTP, and the cross-language household
 scenarios — Ma ticking off an item her son added in English, a reminder crossing
 languages, a device matched by whatever she calls it, and an ambiguous name asking

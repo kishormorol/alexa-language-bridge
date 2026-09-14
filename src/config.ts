@@ -19,6 +19,8 @@ export const config = {
   languageProvider: process.env['LANGUAGE_PROVIDER'] ?? 'echo',
   /** OAuth 2.1 is on unless explicitly disabled for local iteration. */
   authEnabled: (process.env['AUTH_ENABLED'] ?? 'true') !== 'false',
+  /** Translation cache file. Empty disables persistence; the cache stays in memory. */
+  translationCachePath: process.env['TRANSLATION_CACHE_PATH'] ?? '.state/translations.json',
   awsRegion: process.env['AWS_REGION'] ?? 'us-west-2',
   /** Bedrock model id. Note the `anthropic.` prefix Bedrock requires. */
   bedrockModelId: process.env['BEDROCK_MODEL_ID'] ?? 'anthropic.claude-opus-5',

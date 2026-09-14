@@ -141,6 +141,18 @@ Switching is one environment variable; nothing outside `src/lang/` changes.
 LANGUAGE_PROVIDER=bedrock AWS_PROFILE=alexa-hackathon npm run sim
 ```
 
+A content-addressed cache sits in front of whichever provider is active. A household
+repeats itself — the same groceries, the same reminders — so most turns never reach
+the model. Identical concurrent misses share one in-flight call, and a cache hit does
+no disk write, because that is the hot path of a 500 ms budget.
+
+```bash
+npm run bench    # cold vs warm round-trip latency against the 500 ms budget
+```
+
+Server overhead measured at 1–3 ms per tool round trip, so effectively the whole
+budget is available to the model. Deployment notes: [docs/deployment.md](docs/deployment.md).
+
 ## Repository layout
 
 ```

@@ -1,8 +1,9 @@
 import { config } from '../config.js';
 import { EchoLanguageProvider, type LanguageProvider } from './provider.js';
 import { BedrockLanguageProvider } from './bedrock.js';
+import { CachingLanguageProvider } from './cache.js';
 
-export function createLanguageProvider(): LanguageProvider {
+function createInner(): LanguageProvider {
   switch (config.languageProvider) {
     case 'echo':
       return new EchoLanguageProvider();
@@ -17,5 +18,13 @@ export function createLanguageProvider(): LanguageProvider {
   }
 }
 
+export function createLanguageProvider(): LanguageProvider {
+  const inner = createInner();
+  // The echo provider is instant and deterministic; caching it only hides bugs.
+  if (inner.name === 'echo') return inner;
+  return new CachingLanguageProvider(inner, config.translationCachePath || null);
+}
+
 export type { LanguageProvider, TranslateRequest, TranslateResult } from './provider.js';
 export { EchoLanguageProvider } from './provider.js';
+export { CachingLanguageProvider } from './cache.js';

@@ -16,7 +16,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "preview:card": "tsx scripts/preview-card.ts",
-    "sim": "tsx src/sim/index.ts"
+    "sim": "tsx src/sim/index.ts",
+    "bench": "tsx scripts/bench.ts"
   },
   "dependencies": {
     "@anthropic-ai/bedrock-sdk": "^0.33.5",
