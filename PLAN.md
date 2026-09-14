@@ -84,10 +84,11 @@ directly. Four conformance tests cover it.
 Onto AWS, then get under 500 ms. Cache aggressively; a cold model call will blow
 the budget on its own.
 
-### 7. Upstream PR — branch ready 14 Sep
+### 7. Upstream PR — DONE 14 Sep
 `modelcontextprotocol/typescript-sdk`, backporting the accepted `Transport` type
 fix to `v1.x`. Fork pushed, 1647 upstream tests green, verified against this
-project. See `docs/open-source-contribution.md`. PR not yet opened.
+project. See `docs/open-source-contribution.md`.
+PR: https://github.com/modelcontextprotocol/typescript-sdk/pull/2814
 
 ### 8. Submission artifacts (15–20 Oct)
 Demo video (<3 min, shot in the simulator or on a device), README setup and run

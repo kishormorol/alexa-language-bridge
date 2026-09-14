@@ -36,14 +36,13 @@ a backport is what is needed.
 - [x] Proved it resolves the real failure: built the patched SDK, installed it into
       this project, re-enabled `exactOptionalPropertyTypes: true`, and typechecked
       clean — then restored the published 1.30.0
-- [ ] PR opened against `v1.x`
-- [ ] Record PR URL here
+- [x] PR opened against `v1.x`: https://github.com/modelcontextprotocol/typescript-sdk/pull/2814
 
 **Submission fields**
 
 | Field | Value |
 | --- | --- |
-| Contribution URL | _pending PR_ |
+| Contribution URL | https://github.com/modelcontextprotocol/typescript-sdk/pull/2814 |
 | Project repository URL | https://github.com/modelcontextprotocol/typescript-sdk |
 | GitHub username | kishormorol |
 | Description | Backport of an accepted upstream type fix to the v1 maintenance line, unblocking every v1 consumer on TypeScript's strictest settings. Closes an open issue. |
