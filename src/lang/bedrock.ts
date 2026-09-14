@@ -13,7 +13,11 @@ const SYSTEM = [
   'You carry short spoken sentences between the languages of one household.',
   '',
   'Rules:',
-  '- Reply with the translation alone. No preamble, no quotes, no notes, no alternatives.',
+  '- Reply with the translation alone, wrapped in <t></t>. Nothing outside the tags.',
+  '- No preamble, no quotes, no notes, no alternatives, no reasoning about the task.',
+  '- Decide before you answer. Do not correct yourself in the reply: what is inside',
+  '  the tags is spoken aloud in someone\'s home, and a reconsideration spoken aloud',
+  '  is not an answer.',
   '- Keep it as someone would actually say it at home, not formally.',
   '- Keep names, brands and numbers exactly as given.',
   '- If the text is already in the target language, reply with it unchanged.',
@@ -52,6 +56,15 @@ const SYSTEM = [
  * See FL-006.
  */
 export type BedrockEndpoint = 'runtime' | 'mantle';
+
+/** The reply is delimited so a model that keeps talking can be cut off cleanly. */
+const OPEN = '<t>';
+const CLOSE = '</t>';
+
+function indexOrEnd(haystack: string, needle: string): number {
+  const at = haystack.indexOf(needle);
+  return at === -1 ? haystack.length : at;
+}
 
 /** The slice of the client this provider uses, so tests can stand in for it. */
 export interface MessagesClient {
@@ -117,26 +130,52 @@ export class BedrockLanguageProvider implements LanguageProvider {
       max_tokens: 1024,
       ...(this.#effort ? { output_config: { effort: this.#effort } } : {}),
       system: [{ type: 'text', text: SYSTEM, cache_control: { type: 'ephemeral' } }],
+      // Closing the tag ends the turn, so anything the model would have said after
+      // its answer is never generated or billed.
+      stop_sequences: [CLOSE],
       messages: [
         {
           role: 'user',
           content:
-            `${what}${script}Carry this from ${languageName(detected)} into ` +
-            `${languageName(to)}.\n\n${text}`,
+            `${what}${script}The speaker's language is usually ` +
+            `${languageName(detected)}, but that label is a guess — trust the text ` +
+            `itself. Render it so someone who reads ${languageName(to)} hears what ` +
+            `was said. If it is already ${languageName(to)}, reply with it ` +
+            `unchanged.\n\n${text}`,
         },
+        // Prefilling the opening tag starts the reply inside the answer, so there is
+        // nowhere to put a preamble.
+        { role: 'assistant', content: OPEN },
       ],
     });
 
-    const translated = (response.content as { type: string; text?: string }[])
+    const raw = (response.content as { type: string; text?: string }[])
       .filter((block) => block.type === 'text')
       .map((block) => block.text ?? '')
-      .join('')
-      .trim();
+      .join('');
+
+    // Keep only what is inside the tags. Asked to carry text that is already in the
+    // target language, Haiku 4.5 tends to answer, notice the instruction it just
+    // broke, and argue with itself — "রান্না হয়ে গেছে / Wait, I need to reconsider
+    // …" — and every word of that used to be handed to the household as the
+    // message. The stop sequence prevents it in production; this is the belt to
+    // that braces, for a reply that arrives whole.
+    const translated = raw.slice(0, indexOrEnd(raw, CLOSE)).replace(OPEN, '').trim();
 
     // Never silently hand back the untranslated original — a wrong-language
     // rendering that looks plausible is worse than an obvious failure.
     if (translated === '') {
       throw new Error(`Bedrock returned no text when carrying ${detected} into ${to}`);
+    }
+
+    // A rendering is one spoken line. More than that means the model never closed
+    // the tag and is still talking, and the same rule applies: refuse it rather than
+    // speak it aloud and cache it.
+    if (translated.includes('\n')) {
+      throw new Error(
+        `Bedrock did not close its reply when carrying ${detected} into ${to}; ` +
+          `refusing a rendering it may still have been arguing with`,
+      );
     }
 
     return { text: translated, detectedLanguage: detected };

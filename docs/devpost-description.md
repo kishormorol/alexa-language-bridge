@@ -85,7 +85,7 @@ test stayed green — because nothing exercised the page in a browser.
 ## Accomplishments
 
 Every Stage 1 requirement is met and tested rather than asserted: spec version,
-transport, OAuth flow, and the MCP stack actually called at runtime. 65 tests,
+transport, OAuth flow, and the MCP stack actually called at runtime. 70 tests,
 including OAuth failure paths — wrong verifier, wrong resource, replayed code, bogus
 token — and an end-to-end client/server round trip proving state survives a session.
 
@@ -116,7 +116,7 @@ them.
 ```bash
 git clone https://github.com/kishormorol/alexa-language-bridge.git
 cd alexa-language-bridge && npm install
-npm test          # 65 tests, no cloud account needed
+npm test          # 70 tests, no cloud account needed
 npm run sim       # open http://localhost:4000
 ```
 

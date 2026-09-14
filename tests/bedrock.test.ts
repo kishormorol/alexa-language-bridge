@@ -74,6 +74,64 @@ describe('BedrockLanguageProvider', () => {
     expect(result.text).toBe('rice');
   });
 
+  it('keeps only what is inside the tags when the model keeps talking', async () => {
+    // What Haiku 4.5 actually did on "dinner is ready" — English text under Ma's
+    // bn-BD label. It answered, noticed it had broken the rule it was given, and
+    // reconsidered out loud. All of it reached the household as the message.
+    const { client } = stub([
+      {
+        type: 'text',
+        text: 'dinner is ready</t>\n\nWait, I need to reconsider. You have given me English text',
+      },
+    ]);
+    const result = await provider(client).translate({
+      text: 'dinner is ready',
+      from: 'bn-BD',
+      to: 'en-US',
+    });
+
+    expect(result.text).toBe('dinner is ready');
+  });
+
+  it('strips the opening tag if the model echoes it back', async () => {
+    const { client } = stub([{ type: 'text', text: '<t>rice</t>' }]);
+    const result = await provider(client).translate({ text: 'chal', from: 'bn-BD', to: 'en-US' });
+
+    expect(result.text).toBe('rice');
+  });
+
+  it('refuses a rendering the model never finished, rather than speaking it aloud', async () => {
+    const { client } = stub([
+      { type: 'text', text: 'রান্না হয়ে গেছে\n\nWait, I need to reconsider.' },
+    ]);
+    await expect(
+      provider(client).translate({ text: 'dinner is ready', from: 'bn-BD', to: 'en-US' }),
+    ).rejects.toThrow(/did not close its reply/i);
+  });
+
+  it('prefills the opening tag and stops at the closing one', async () => {
+    const { client, create } = stub([{ type: 'text', text: 'rice' }]);
+    await provider(client).translate({ text: 'chal', from: 'bn-BD', to: 'en-US' });
+
+    const request = create.mock.calls[0]?.[0] as {
+      stop_sequences: string[];
+      messages: { role: string; content: string }[];
+    };
+    expect(request.stop_sequences).toEqual(['</t>']);
+    expect(request.messages.at(-1)).toEqual({ role: 'assistant', content: '<t>' });
+  });
+
+  it('offers the source language as a guess, not as an instruction to translate', async () => {
+    // Telling it to carry English "dinner is ready" *from Bangla* is what set the
+    // model arguing in the first place.
+    const { client, create } = stub([{ type: 'text', text: 'rice' }]);
+    await provider(client).translate({ text: 'chal', from: 'bn-BD', to: 'en-US' });
+
+    const request = create.mock.calls[0]?.[0] as { messages: { content: string }[] };
+    expect(request.messages[0]?.content).toContain('guess');
+    expect(request.messages[0]?.content).toContain('unchanged');
+  });
+
   it('throws rather than handing back the untranslated original', async () => {
     const { client } = stub([{ type: 'text', text: '   ' }]);
     await expect(

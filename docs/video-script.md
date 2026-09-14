@@ -81,7 +81,7 @@ design, and it's why she isn't a second-class user of her own home."
 host. Language identity persists across sessions, so the device remembers who speaks
 what."
 
-**On screen:** `44 tests · MCP 2025-11-25 · OAuth 2.1 + PKCE · MCP Apps`
+**On screen:** `70 tests · MCP 2025-11-25 · OAuth 2.1 + PKCE · MCP Apps`
 
 ---
 
