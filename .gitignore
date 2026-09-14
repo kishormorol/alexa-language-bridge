@@ -10,3 +10,4 @@ build/
 addon-package/build/
 coverage/
 .state/
+card-preview.html
