@@ -25,6 +25,7 @@ Budget: roughly 60% build, 25% submission artifacts, 15% friction log and feedba
 | --- | --- | --- | --- |
 | 1 | Language | TypeScript | MCP Apps UIs are web, so one language covers server + UI; the TS SDK tracks `2025-11-25` most closely. ML comfort is Python, but the language work happens in Bedrock over HTTP. |
 | 2 | Concept | Household language bridge | Maxes Impact and Quality-of-Idea together. Revisit only if the `en-US` locale lock blocks non-English input at the Alexa layer. |
+| 3a | Integration path | **Self-hosted MCP server**, not the Alexa+ MCP Toolkit | Toolkit access is gated behind Amazon SA onboarding (FL-003) and was never required: the rules accept "a working Agent Skill or a self-hosted MCP server" on the open spec. Removes the only hard external dependency. |
 | 3 | Hosting | AWS (Lambda Function URL or App Runner) + Bedrock, on a **dedicated account** | Buys the <500ms budget, a stable HTTPS URL for judges, and the AWS Builder entry in one move. Dedicated account because credits attach to one account ID and spend stays isolated. `cloudflared` for local iteration only. See [docs/aws-setup.md](docs/aws-setup.md). |
 | 4 | Open-source PR | Chosen from the friction log in weeks 2–3 | Authentic beats manufactured; the rubric rewards a real integration pattern over a new empty repo. |
 
@@ -42,9 +43,13 @@ Budget: roughly 60% build, 25% submission artifacts, 15% friction log and feedba
 
 ## Milestones
 
-### 1. De-risk (14–20 Sep) — nothing else starts until this lands
-Amazon developer account. Dedicated AWS account, Bedrock model access requested,
-credits form submitted, profiles configured (`docs/aws-setup.md`). Install `alexa-ai`, `configure`, `new mcp`, deploy a
+### 1. De-risk (14–20 Sep) — RESOLVED 14 Sep
+Dedicated AWS account created and profiles configured. MCP Toolkit access tested and
+**refused** — see FL-003. Consequence: build a self-hosted MCP server on the open
+spec and demonstrate it through a simulated Alexa+ experience, both of which the
+rules accept. No Amazon onboarding on the critical path.
+
+Still open in this milestone: Bedrock model access, credits form. Install `alexa-ai`, `configure`, `new mcp`, deploy a
 two-tool hello-world, confirm it answers in the web simulator. Confirm how a
 non-English utterance reaches the server. `FRICTION.md` opens on line one.
 
@@ -83,8 +88,8 @@ two days — it carries Design and Impact almost by itself.
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| Add-on certification gates simulator access | Schedule-breaking | Milestone 1 is a spike for exactly this — know on day 2, not day 20 |
-| `en-US` locale lock blocks non-English input | Kills decision 2 | Verified in milestone 1; fall back to a care-coordination concept |
+| ~~Add-on certification gates simulator access~~ | ~~Schedule-breaking~~ | **Materialised 14 Sep** (FL-003) and routed around: self-hosted MCP server + simulated Alexa+ demo, no Amazon gate |
+| ~~`en-US` locale lock blocks non-English input~~ | ~~Kills decision 2~~ | Moot — the simulated path owns its own speech input, so locale is ours to choose |
 | <500 ms vs an LLM round-trip | Forces a week-4 redesign | Cache, small fast model, stream early |
 | MCP Apps docs sparse or extension immature | Loses the visual differentiator | Fall back to plain cards — still beats tools-only |
 | Sole maintainer, fixed date | Everything | Milestones 2–4 are parallel-safe; cut 7 before 5 |
@@ -98,7 +103,9 @@ pass/fail for Stage 1 eligibility. Skip broad coverage; this ships in five weeks
 
 ## Open questions
 
-1. Does add-on approval gate web-simulator testing?
-2. Does non-`en-US` speech reach the MCP server at all, and in what form?
+Both original questions are answered: toolkit access is refused (FL-003), and the
+locale question is moot on the self-hosted path.
 
-Both answered by milestone 1. Both can redirect the plan.
+Remaining: whether toolkit access can still be requested through the hackathon's
+support channels. Worth asking in parallel — if granted, the demo gains real-device
+footage. Nothing depends on it.

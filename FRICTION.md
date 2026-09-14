@@ -26,6 +26,18 @@ Each entry needs all six fields. Severity: Blocker / Major / Minor.
 ## Entries
 
 <!-- newest first -->
+### FL-003 — MCP Toolkit onboarding requires an Alexa Solutions Architect; no self-serve path documented
+
+- **Date:** 2026-09-14
+- **Tool / SDK / API:** Alexa+ MCP Toolkit · Alexa AI CLI · AWS CodeArtifact
+- **Task attempted:** Obtain the CodeArtifact credentials needed to install `@alexa-ai/cli`, as a hackathon participant with a new AWS account.
+- **Steps taken:** Created a dedicated AWS account, created an IAM user with `AdministratorAccess`, confirmed identity with `aws sts get-caller-identity`, then ran the documented `aws sts assume-role` against `arn:aws:iam::372468808636:role/AddOn3PDeveloperToolsRead`.
+- **Expected result:** Temporary credentials, or an error explaining how to request access.
+- **Actual result:** `AccessDenied ... is not authorized to perform: sts:AssumeRole on resource: arn:aws:iam::372468808636:role/AddOn3PDeveloperToolsRead`. Confirmed `AdministratorAccess` is attached, so `sts:AssumeRole` is permitted locally — the refusal is the target role's trust policy. The setup docs say to "Log in to the AWS account that you provided to the Alexa Solutions Architect", which implies the account ID must be allowlisted by Amazon in advance.
+- **Severity:** Blocker
+- **Workaround used:** None available for the toolkit path. Proceeding with a self-hosted MCP server on the open spec, which the hackathon rules accept and which requires no Amazon onboarding.
+- **Actionable suggestion:** Two gaps. First, the setup docs present the toolkit as self-serve but depend on a Solutions Architect relationship never mentioned until a passing reference mid-page — state the prerequisite in the first paragraph. Second, there is no documented way to request access; a developer outside an existing Amazon partnership hits `AccessDenied` with no next step. Publish a request path, and have the failure message point at it. For a hackathon with thousands of participants this is the difference between the flagship integration being usable and being invisible.
+
 ### FL-002 — `alexa-ai` on public npm is an unrelated third-party package
 
 - **Date:** 2026-09-14
