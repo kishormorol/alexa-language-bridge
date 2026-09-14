@@ -16,6 +16,7 @@
 | Demo video under 3:00 | ⬜ not shot |
 | Video public on YouTube or Vimeo | ⬜ |
 | Video shows the project functioning on its platform | ⬜ simulator capture (permitted under the simulated Alexa+ path) |
+| Latency claim stated honestly | ✅ ~5 ms repeats, ~650 ms novel — `PLAN.md` says both |
 | All materials in English | ✅ |
 | Free to test, no restriction, through the judging period | ✅ runs locally, no account needed on `echo` |
 
@@ -28,11 +29,11 @@ gh repo view kishormorol/alexa-language-bridge --json licenseInfo
 
 | Field | State |
 | --- | --- |
-| Text description of features and functionality | ⬜ draft from `README.md` |
+| Text description of features and functionality | ✅ `docs/devpost-description.md` |
 | Primary track identified | ✅ **Alexa+** |
 | Mini challenges identified | ✅ **Open Source** and **AWS Builder** (enter both; only one can be won) |
 | Product feedback, per tool | ✅ `PRODUCT-FEEDBACK.md` |
-| AWS Builder: which services and how | ⚠️ depends on Bedrock actually running |
+| AWS Builder: which services and how | ✅ Bedrock running; see `PRODUCT-FEEDBACK.md` |
 | Open Source: contribution URL | ✅ https://github.com/modelcontextprotocol/typescript-sdk/pull/2814 |
 | Open Source: project repo URL | ✅ https://github.com/modelcontextprotocol/typescript-sdk |
 | Open Source: GitHub username | ✅ `kishormorol` |
@@ -44,10 +45,11 @@ gh repo view kishormorol/alexa-language-bridge --json licenseInfo
 
 | Item | Owner | Why it matters |
 | --- | --- | --- |
-| **Bedrock model access** — hackathon AWS account, `us-west-2` | Kishor | The video is not shootable without it. On `echo` the demo shows `[en-US] chal` instead of `rice`, and the lamp beat fails outright. **Longest-lead item on the board.** |
-| AWS promotional credits form | Kishor | Deadline 21 Oct, but "while supplies last" against 6,000+ entrants |
-| Deploy + latency measurement under 500 ms | — | Follows Bedrock access |
-| Demo video | — | Follows Bedrock access |
+| ~~Bedrock model access~~ | — | **Done 14 Sep.** Haiku 4.5 live; every demo beat works on real translation |
+| **Join the hackathon on Devpost** | Kishor | Gates the credits form and the submission itself |
+| **AWS promotional credits form** | Kishor | Needs Devpost registration first. "While supplies last" against 6,000+ entrants |
+| **Make the repo public** | Kishor | Stage 1 pass/fail. `gh repo edit --visibility public` |
+| **Record the demo video** | Kishor | Three of four scoring criteria. Script in `docs/video-script.md`; shootable today |
 
 ## Day-of
 
