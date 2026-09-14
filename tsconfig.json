@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "rootDir": "src",
+    "outDir": "dist",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    // Upstream blocker: @modelcontextprotocol/sdk declares Transport.onclose as
+    // `onclose?: () => void` while StreamableHTTPServerTransport implements it as an
+    // accessor typed `(() => void) | undefined`, so the SDK's own transport fails to
+    // satisfy the SDK's own interface under this flag. See FL-004; PR candidate.
+    "exactOptionalPropertyTypes": false,
+    "sourceMap": true,
+    "declaration": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -21,25 +21,42 @@ the result is rendered bilingually as an MCP App card on the device screen.
 
 ## Setup
 
-> To be completed. Judges must be able to clone, configure, and run from these
-> instructions alone.
+Requires Node 24 or newer. No cloud account is needed to run or test this — the
+default language provider runs offline.
 
 ```bash
 git clone https://github.com/kishormorol/alexa-language-bridge.git
 cd alexa-language-bridge
 npm install
-cp .env.example .env    # fill in credentials
+cp .env.example .env
 npm run dev
 ```
 
-## Running the add-on
+The MCP endpoint is then at `http://127.0.0.1:3000/mcp`, with a liveness probe at
+`/healthz`.
 
 ```bash
-alexa-ai configure      # one-time
-alexa-ai deploy         # deploy to the development stage
+npm test         # unit tests plus an end-to-end MCP client/server round trip
+npm run build    # compile to dist/
+npm start        # run the compiled server
 ```
 
-Then test in the Alexa+ web simulator.
+## Tools
+
+| Tool | What it does |
+| --- | --- |
+| `register_household_member` | Record a person and the language they speak |
+| `list_household_members` | Who is in the household, and in what language |
+| `leave_message` | Store a spoken message, delivered in the recipient's language |
+| `get_messages` | Read back waiting messages in the reader's own language |
+| `interpret_for_household` | Carry a live utterance from one person's language to another's |
+
+## Language provider
+
+`LANGUAGE_PROVIDER=echo` is the default. It does not translate — it prefixes text
+with the target tag so a wrong-language rendering is obvious in tests and demos
+rather than silently plausible. The Bedrock provider replaces it once model access
+is granted; nothing outside `src/lang/` changes.
 
 ## Repository layout
 

@@ -26,6 +26,18 @@ Each entry needs all six fields. Severity: Blocker / Major / Minor.
 ## Entries
 
 <!-- newest first -->
+### FL-004 — SDK `Transport` interface is not `exactOptionalPropertyTypes`-safe
+
+- **Date:** 2026-09-14
+- **Tool / SDK / API:** `@modelcontextprotocol/sdk` 1.30.0 (TypeScript)
+- **Task attempted:** Build a Streamable HTTP MCP server in a project compiled with TypeScript `strict` plus `exactOptionalPropertyTypes: true`.
+- **Steps taken:** Constructed a `StreamableHTTPServerTransport` and passed it to `McpServer.connect()`.
+- **Expected result:** Type-checks — the SDK's own transport should satisfy the SDK's own `Transport` interface.
+- **Actual result:** `TS2379: Argument of type 'StreamableHTTPServerTransport' is not assignable to parameter of type 'Transport' with 'exactOptionalPropertyTypes: true'. Types of property 'onclose' are incompatible. Type '(() => void) | undefined' is not assignable to type '() => void'.` `shared/transport.d.ts` declares `onclose?: () => void`, `onerror?: (error: Error) => void`, `onmessage?: ...` and `sessionId?: string`, while `server/streamableHttp.d.ts` implements them as accessors typed `... | undefined`. Under this flag an optional property may be absent but not explicitly `undefined`, so the two are incompatible.
+- **Severity:** Major
+- **Workaround used:** Set `exactOptionalPropertyTypes: false` in `tsconfig.json`, weakening type safety across the whole project to accommodate one dependency.
+- **Actionable suggestion:** Declare the optional members of `Transport` as `onclose?: (() => void) | undefined` (and likewise `onerror`, `onmessage`, `sessionId`). That is source-compatible for every existing consumer and makes the SDK usable from projects on TypeScript's strictest settings. Adding `exactOptionalPropertyTypes: true` to the SDK's own tsconfig would keep it from regressing.
+
 ### FL-003 — MCP Toolkit onboarding requires an Alexa Solutions Architect; no self-serve path documented
 
 - **Date:** 2026-09-14

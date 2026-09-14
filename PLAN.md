@@ -53,16 +53,20 @@ Still open in this milestone: Bedrock model access, credits form. Install `alexa
 two-tool hello-world, confirm it answers in the web simulator. Confirm how a
 non-English utterance reaches the server. `FRICTION.md` opens on line one.
 
-### 2. Core MCP server (21 Sep – 4 Oct)
-`src/server.ts`, `src/tools/*.ts`. Streamable HTTP, 3–4 real tools, no auth yet.
+### 2. Core MCP server — DONE 14 Sep
+Streamable HTTP on `@modelcontextprotocol/sdk` 1.30.0, which ships
+`LATEST_PROTOCOL_VERSION = '2025-11-25'`. Five tools, file-backed household state,
+pluggable language provider. 11 tests green, including an end-to-end client/server
+round trip asserting state survives a session teardown.
 
 ### 3. OAuth 2.1 + PKCE (21 Sep – 4 Oct)
 `src/auth/`. Well-known metadata, 401 path, `resource` on authorize and token.
 Fiddliest part of the build — isolate so it cannot block milestone 4.
 
-### 4. Cross-session state (21 Sep – 4 Oct)
-Per-household language preference and history. This is what moves the project off
-"basic MCP wrapper", which the rubric names as the obvious, low-scoring case.
+### 4. Cross-session state — DONE 14 Sep
+Per-household members, languages and message history, persisted and proven across
+sessions by test. Swap the file store for DynamoDB behind `HouseholdStore` if the
+demo needs it; nothing above that interface changes.
 
 ### 5. MCP Apps visual layer (5–14 Oct)
 `src/apps/`. The bilingual card. Highest score-per-hour available — judges named
@@ -98,8 +102,10 @@ two days — it carries Design and Impact almost by itself.
 
 ## Tests
 
-None yet. Worth writing for MCP spec conformance and the OAuth flow — both are
-pass/fail for Stage 1 eligibility. Skip broad coverage; this ships in five weeks.
+11 green: store persistence and isolation, render caching, and an end-to-end MCP
+client/server round trip over Streamable HTTP. The OAuth flow still needs coverage —
+it is pass/fail for Stage 1 eligibility. Skip broad coverage beyond that; this ships
+in five weeks.
 
 ## Open questions
 

@@ -9,3 +9,4 @@ build/
 .alexa-ai/
 addon-package/build/
 coverage/
+.state/
