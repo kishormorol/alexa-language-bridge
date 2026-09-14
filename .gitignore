@@ -1,0 +1,11 @@
+node_modules/
+dist/
+build/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+.alexa-ai/
+addon-package/build/
+coverage/
