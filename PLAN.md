@@ -24,7 +24,7 @@ Budget: roughly 60% build, 25% submission artifacts, 15% friction log and feedba
 | # | Decision | Pick | Tradeoff |
 | --- | --- | --- | --- |
 | 1 | Language | TypeScript | MCP Apps UIs are web, so one language covers server + UI; the TS SDK tracks `2025-11-25` most closely. ML comfort is Python, but the language work happens in Bedrock over HTTP. |
-| 2 | Concept | Household language bridge | Maxes Impact and Quality-of-Idea together. Revisit only if the `en-US` locale lock blocks non-English input at the Alexa layer. |
+| 2 | Concept | Household **agency**, not translation | Sharpened 14 Sep. "Translation" invites the fatal judge question — *Alexa+ is already an LLM, why isn't this a system prompt?* Agency answers it: a prompt cannot hold per-person language identity across sessions, route an async message to another member, or let someone operate lists, reminders and devices the household registered in a language they do not read. |
 | 3a | Integration path | **Self-hosted MCP server**, not the Alexa+ MCP Toolkit | Toolkit access is gated behind Amazon SA onboarding (FL-003) and was never required: the rules accept "a working Agent Skill or a self-hosted MCP server" on the open spec. Removes the only hard external dependency. |
 | 3 | Hosting | AWS (Lambda Function URL or App Runner) + Bedrock, on a **dedicated account** | Buys the <500ms budget, a stable HTTPS URL for judges, and the AWS Builder entry in one move. Dedicated account because credits attach to one account ID and spend stays isolated. `cloudflared` for local iteration only. See [docs/aws-setup.md](docs/aws-setup.md). |
 | 4 | Open-source PR | Chosen from the friction log in weeks 2–3 | Authentic beats manufactured; the rubric rewards a real integration pattern over a new empty repo. |
@@ -68,9 +68,10 @@ Per-household members, languages and message history, persisted and proven acros
 sessions by test. Swap the file store for DynamoDB behind `HouseholdStore` if the
 demo needs it; nothing above that interface changes.
 
-### 5. MCP Apps visual layer (5–14 Oct)
+### 5. MCP Apps visual layer (5–14 Oct) — NEXT
 `src/apps/`. The bilingual card. Highest score-per-hour available — judges named
-MCP Apps and media support explicitly as the creative case.
+MCP Apps and media support explicitly as the creative case, and it is the visual
+that carries Design and Impact in the video.
 
 ### 6. Deploy + latency pass (5–14 Oct)
 Onto AWS, then get under 500 ms. Cache aggressively; a cold model call will blow
@@ -102,10 +103,12 @@ two days — it carries Design and Impact almost by itself.
 
 ## Tests
 
-11 green: store persistence and isolation, render caching, and an end-to-end MCP
-client/server round trip over Streamable HTTP. The OAuth flow still needs coverage —
-it is pass/fail for Stage 1 eligibility. Skip broad coverage beyond that; this ships
-in five weeks.
+17 green: store persistence and isolation, render caching, an end-to-end MCP
+client/server round trip over Streamable HTTP, and the cross-language household
+scenarios — Ma ticking off an item her son added in English, a reminder crossing
+languages, a device matched by whatever she calls it, and an ambiguous name asking
+rather than guessing. The OAuth flow still needs coverage; it is pass/fail for
+Stage 1 eligibility. Skip broad coverage beyond that.
 
 ## Open questions
 

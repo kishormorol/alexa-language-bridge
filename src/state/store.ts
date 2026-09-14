@@ -1,7 +1,15 @@
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { randomUUID } from 'node:crypto';
-import type { Household, Member, Message } from '../domain/types.js';
+import type {
+  Device,
+  DeviceState,
+  Household,
+  ListItem,
+  Member,
+  Message,
+  Reminder,
+} from '../domain/types.js';
 import type { LanguageTag } from '../domain/languages.js';
 
 /**
@@ -52,10 +60,14 @@ export class HouseholdStore {
     const cache = await this.#load();
     let found = cache.get(householdId);
     if (!found) {
-      found = { id: householdId, members: [], messages: [] };
+      found = { id: householdId, members: [], messages: [], lists: {}, reminders: [], devices: [] };
       cache.set(householdId, found);
       await this.#persist();
     }
+    // Households written by an earlier schema are missing the newer collections.
+    found.lists ??= {};
+    found.reminders ??= [];
+    found.devices ??= [];
     return found;
   }
 
@@ -109,6 +121,94 @@ export class HouseholdStore {
       }
     }
     if (touched) await this.#persist();
+  }
+
+  // ---- lists -------------------------------------------------------------
+
+  async addListItem(householdId: string, list: string, item: ListItem): Promise<ListItem> {
+    const house = await this.household(householdId);
+    const key = list.toLowerCase();
+    (house.lists[key] ??= []).push(item);
+    await this.#persist();
+    return item;
+  }
+
+  async listItems(householdId: string, list: string, includeDone: boolean): Promise<ListItem[]> {
+    const house = await this.household(householdId);
+    const items = house.lists[list.toLowerCase()] ?? [];
+    return includeDone ? items : items.filter((i) => i.doneAt === null);
+  }
+
+  async listNames(householdId: string): Promise<string[]> {
+    const house = await this.household(householdId);
+    return Object.keys(house.lists).filter((k) => (house.lists[k] ?? []).length > 0);
+  }
+
+  /** Marks matching open items done. Returns the items actually closed. */
+  async completeListItems(householdId: string, list: string, ids: readonly string[]): Promise<ListItem[]> {
+    const house = await this.household(householdId);
+    const items = house.lists[list.toLowerCase()] ?? [];
+    const stamp = new Date().toISOString();
+    const closed: ListItem[] = [];
+    for (const item of items) {
+      if (ids.includes(item.id) && item.doneAt === null) {
+        item.doneAt = stamp;
+        closed.push(item);
+      }
+    }
+    if (closed.length > 0) await this.#persist();
+    return closed;
+  }
+
+  // ---- reminders ---------------------------------------------------------
+
+  async addReminder(householdId: string, reminder: Reminder): Promise<Reminder> {
+    const house = await this.household(householdId);
+    house.reminders.push(reminder);
+    await this.#persist();
+    return reminder;
+  }
+
+  async remindersFor(householdId: string, memberId: string, includeDone: boolean): Promise<Reminder[]> {
+    const house = await this.household(householdId);
+    return house.reminders
+      .filter((r) => r.forMemberId === memberId && (includeDone || r.doneAt === null))
+      .sort((a, b) => a.dueAt.localeCompare(b.dueAt));
+  }
+
+  // ---- devices -----------------------------------------------------------
+
+  async addDevice(householdId: string, device: Device): Promise<Device> {
+    const house = await this.household(householdId);
+    house.devices.push(device);
+    await this.#persist();
+    return device;
+  }
+
+  async devices(householdId: string): Promise<Device[]> {
+    const house = await this.household(householdId);
+    return house.devices;
+  }
+
+  async setDeviceState(
+    householdId: string,
+    deviceId: string,
+    state: DeviceState,
+    byMemberId: string,
+  ): Promise<Device | undefined> {
+    const house = await this.household(householdId);
+    const device = house.devices.find((d) => d.id === deviceId);
+    if (!device) return undefined;
+    device.state = state;
+    device.changedAt = new Date().toISOString();
+    device.changedByMemberId = byMemberId;
+    await this.#persist();
+    return device;
+  }
+
+  /** Persist renderings cached lazily while reading. */
+  async save(): Promise<void> {
+    await this.#persist();
   }
 
   /** Test seam: drop the in-memory cache so the next read comes off disk. */

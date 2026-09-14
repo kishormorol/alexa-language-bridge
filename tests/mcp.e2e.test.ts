@@ -50,11 +50,18 @@ describe('MCP server over Streamable HTTP', () => {
     const client = await connect();
     const { tools } = await client.listTools();
     expect(tools.map((t) => t.name).sort()).toEqual([
+      'add_to_list',
+      'complete_list_item',
       'get_messages',
+      'get_reminders',
       'interpret_for_household',
       'leave_message',
       'list_household_members',
+      'read_list',
+      'register_device',
       'register_household_member',
+      'set_device_state',
+      'set_reminder',
     ]);
     await client.close();
   });

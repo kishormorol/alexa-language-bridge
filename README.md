@@ -1,10 +1,16 @@
 # Alexa Language Bridge
 
-An Alexa+ MCP add-on that lets a household member who does not speak English use
-an Alexa+ device in their own language, while the rest of the room follows along.
+An Alexa+ MCP add-on that gives a household member who does not speak English the
+run of the house.
 
-Speech in a non-English language is understood, the real task is carried out, and
-the result is rendered bilingually as an MCP App card on the device screen.
+Not a translator. Ma adds rice to the shopping list in Bangla and her son reads it
+in English. She ticks off the milk he added. She sets him a reminder, turns off the
+kitchen light, leaves him a message that arrives in his language when he next asks.
+The device stops being an English appliance the family operates on her behalf and
+becomes one she uses herself.
+
+Nothing in the house is stored in English and translated for her. Everything is
+stored as spoken, and rendered for whoever is asking.
 
 > Status: early development. Built for the Build, Ship, Shape: Amazon Developer
 > Hackathon (Alexa+ track), submission window 31 Aug – 23 Oct 2026.
@@ -15,9 +21,9 @@ the result is rendered bilingually as an MCP App card on the device screen.
 | --- | --- |
 | MCP server | Streamable HTTP, MCP spec `2025-11-25` |
 | Auth | OAuth 2.1 authorization code + PKCE (S256) |
-| Language layer | Translation and intent grounding |
-| State | Per-household language preference, carried across sessions |
-| Surface | MCP App card rendering both languages side by side |
+| Language layer | Renders any stored utterance into the asker's language, cached |
+| State | Members, languages, lists, reminders, devices and messages, across sessions |
+| Surface | MCP App card showing both languages side by side |
 
 ## Setup
 
@@ -43,10 +49,29 @@ npm start        # run the compiled server
 
 ## Tools
 
+**People**
+
 | Tool | What it does |
 | --- | --- |
 | `register_household_member` | Record a person and the language they speak |
 | `list_household_members` | Who is in the household, and in what language |
+
+**Getting things done**
+
+| Tool | What it does |
+| --- | --- |
+| `add_to_list` | Add to a shared list, in your own words |
+| `read_list` | Read the list back in the asker's language |
+| `complete_list_item` | Tick off an item, matched in any language it is held in |
+| `set_reminder` | Set a reminder for yourself or someone else |
+| `get_reminders` | What is waiting, in your own language |
+| `register_device` | Name something controllable, in your own words |
+| `set_device_state` | Turn it on or off, by whatever you call it |
+
+**Talking to each other**
+
+| Tool | What it does |
+| --- | --- |
 | `leave_message` | Store a spoken message, delivered in the recipient's language |
 | `get_messages` | Read back waiting messages in the reader's own language |
 | `interpret_for_household` | Carry a live utterance from one person's language to another's |
