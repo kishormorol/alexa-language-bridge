@@ -59,9 +59,14 @@ Streamable HTTP on `@modelcontextprotocol/sdk` 1.30.0, which ships
 pluggable language provider. 11 tests green, including an end-to-end client/server
 round trip asserting state survives a session teardown.
 
-### 3. OAuth 2.1 + PKCE (21 Sep – 4 Oct)
-`src/auth/`. Well-known metadata, 401 path, `resource` on authorize and token.
-Fiddliest part of the build — isolate so it cannot block milestone 4.
+### 3. OAuth 2.1 + PKCE — DONE 14 Sep
+`src/auth/`. Authorization code + PKCE (S256), dynamic client registration, both
+metadata documents, RFC 8707 resource indicators with audience-bound tokens,
+single-use 60-second codes. Eight conformance tests, one of which caught a real
+spec violation: an invalid bearer token was returning 400 instead of the 401 that
+RFC 6750 requires, leaving a client no way to know it should re-authenticate.
+
+With this, every Stage 1 eligibility item is met.
 
 ### 4. Cross-session state — DONE 14 Sep
 Per-household members, languages and message history, persisted and proven across
@@ -105,12 +110,13 @@ two days — it carries Design and Impact almost by itself.
 
 ## Tests
 
-17 green: store persistence and isolation, render caching, an end-to-end MCP
+29 green: store persistence and isolation, render caching, an end-to-end MCP
 client/server round trip over Streamable HTTP, and the cross-language household
 scenarios — Ma ticking off an item her son added in English, a reminder crossing
 languages, a device matched by whatever she calls it, and an ambiguous name asking
-rather than guessing. The OAuth flow still needs coverage; it is pass/fail for
-Stage 1 eligibility. Skip broad coverage beyond that.
+rather than guessing. The OAuth flow is covered end to end, including the failure
+paths that matter: wrong verifier, wrong resource, replayed code, bogus token.
+Skip broad coverage beyond that.
 
 ## Open questions
 

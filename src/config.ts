@@ -17,6 +17,8 @@ export const config = {
   statePath: process.env['STATE_PATH'] ?? '.state/households.json',
   /** Language backend: "echo" for local development, "bedrock" once model access lands. */
   languageProvider: process.env['LANGUAGE_PROVIDER'] ?? 'echo',
+  /** OAuth 2.1 is on unless explicitly disabled for local iteration. */
+  authEnabled: (process.env['AUTH_ENABLED'] ?? 'true') !== 'false',
   awsRegion: process.env['AWS_REGION'] ?? 'us-west-2',
   bedrockModelId: process.env['BEDROCK_MODEL_ID'] ?? '',
 } as const;

@@ -47,6 +47,25 @@ npm run build    # compile to dist/
 npm start        # run the compiled server
 ```
 
+## Authentication
+
+OAuth 2.1 authorization code with PKCE (S256), enforced by default.
+
+| | |
+| --- | --- |
+| Unauthenticated `POST /mcp` | `401` with a `WWW-Authenticate` challenge naming the resource metadata |
+| Authorization server metadata | `/.well-known/oauth-authorization-server` |
+| Protected resource metadata | `/.well-known/oauth-protected-resource/mcp` |
+| Client registration | Dynamic (RFC 7591) at `/register` |
+| Resource indicators | RFC 8707 — `resource` required on authorize and token, and tokens are bound to it |
+
+Authorization codes are single-use and expire in 60 seconds; access tokens last an
+hour and carry the resource they were issued for. There is no consent screen —
+`authorize` approves immediately, which is the one piece a real deployment would
+replace.
+
+Set `AUTH_ENABLED=false` for local iteration only.
+
 ## Tools
 
 **People**
