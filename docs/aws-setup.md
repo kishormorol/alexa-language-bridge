@@ -43,10 +43,18 @@ and is valid through **31 Aug 2028**. One redemption per code.
 The code itself is **not** in this repository and must not be committed — it is a
 bearer token for $150 and this repo is public. Keep it in the approval email.
 
-### 4. Set a billing alarm
+### 4. Set a billing alarm — DONE 14 Sep
 
 Credits are finite and the account is new. A zero-spend budget alert avoids a
 surprise while iterating on model calls.
+
+Budget `alexa-hackathon-credit`: $150, annual, emailing at 50%, 80% and 100% of
+actual spend and at a 100% forecast. It tracks spend **before credits**
+(`IncludeCredit: false`). With credits included, the credit absorbs every charge,
+tracked spend sits at $0, and the first alert would arrive only once the $150 was
+already gone — the one moment it is no use.
+
+Budgets data lags actual usage by up to a day, so a fresh budget reads $0.
 
 ### 5. Configure the local profiles
 
