@@ -24,14 +24,23 @@ rather than in week three.
 Region: `us-west-2` — matches the CodeArtifact region and avoids a second region to
 reason about.
 
-### 3. Request the hackathon credits
+### 3. Request the hackathon credits — APPROVED 14 Sep
 
 $150 in AWS promotional credits, via the form linked from the hackathon rules.
+Requested the day the account ID existed; approved the same day.
 
 - Deadline **21 Oct 2026, 12:00 PT**, but issued **while supplies last** — submit as
   soon as the account ID exists, not near the deadline.
 - Only registered hackathon participants may request them.
 - Not redeemable for cash. Any overage beyond the credits is billed to the account.
+
+Redeem before the first real Bedrock spend: sign in to the hackathon account, open
+[the Credits page](https://console.aws.amazon.com/billing/home#/credits), click
+**Redeem credit**, and enter the code. It applies to eligible charges automatically
+and is valid through **31 Aug 2028**. One redemption per code.
+
+The code itself is **not** in this repository and must not be committed — it is a
+bearer token for $150 and this repo is public. Keep it in the approval email.
 
 ### 4. Set a billing alarm
 

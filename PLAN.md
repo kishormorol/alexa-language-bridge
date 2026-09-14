@@ -49,9 +49,10 @@ Dedicated AWS account created and profiles configured. MCP Toolkit access tested
 spec and demonstrate it through a simulated Alexa+ experience, both of which the
 rules accept. No Amazon onboarding on the critical path.
 
-Still open in this milestone: Bedrock model access, credits form. Install `alexa-ai`, `configure`, `new mcp`, deploy a
-two-tool hello-world, confirm it answers in the web simulator. Confirm how a
-non-English utterance reaches the server. `FRICTION.md` opens on line one.
+Still open in this milestone: nothing — Bedrock model access granted 14 Sep, and the
+$150 promotional credits were approved the same day (redemption pending). Install
+`alexa-ai`, `configure`, `new mcp`, deploy a two-tool hello-world, confirm it answers
+in the web simulator. Confirm how a non-English utterance reaches the server. `FRICTION.md` opens on line one.
 
 ### 2. Core MCP server — DONE 14 Sep
 Streamable HTTP on `@modelcontextprotocol/sdk` 1.30.0, which ships
@@ -154,7 +155,9 @@ instructions, `PRODUCT-FEEDBACK.md`, `FRICTION.md` tidied. The video gets its ow
 two days — it carries Design and Impact almost by itself.
 
 ### 9. Submit
-- **21 Oct** — AWS promotional credits form closes (request regardless).
+- ~~**21 Oct** — AWS promotional credits form closes (request regardless).~~ Requested
+  and **approved 14 Sep**: $150, valid through 31 Aug 2028. Redeem in the billing
+  console before the first real Bedrock spend. The code lives outside this repo.
 - **22 Oct** — submit. Do not touch the 23 Oct noon deadline.
 
 ## Risks
@@ -167,7 +170,7 @@ two days — it carries Design and Impact almost by itself.
 | ~~MCP Apps docs sparse or extension immature~~ | ~~Loses the visual differentiator~~ | **Materialised 14 Sep** (FL-005): the package is v2-only. Contract implemented directly against 1.x instead |
 | Sole maintainer, fixed date | Everything | Milestones 2–4 are parallel-safe; cut 7 before 5 |
 | Bedrock model access not granted on a new account | Blocks the language layer | Request the same day the account opens, not in week three |
-| Promo credits run out before request | Out-of-pocket spend | "While supplies last" — submit the form the day the account ID exists |
+| ~~Promo credits run out before request~~ | ~~Out-of-pocket spend~~ | **Did not materialise** — requested on day one, $150 approved 14 Sep |
 
 ## Tests
 
