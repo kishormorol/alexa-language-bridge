@@ -38,7 +38,12 @@ do it for her."
 **Beat 1 — she does something herself (0:22)**
 Speaker set to **Ma**. Type `chal add koro`.
 
-**VO:** "She adds rice to the shopping list. In Bangla. Nobody translated for her."
+**VO:** "She adds rice to the shopping list. In Bangla. Nobody translated for her.
+On a device, Alexa+ hears her — here, I type what she says."
+
+> *Say the second sentence plainly, not as an apology. The problem is about
+> listening and this demo is typed; naming that first means a judge does not
+> find it for you.*
 
 **Beat 2 — it arrives in his language (0:38)**
 Switch to **Rafi**. Type `what's on the list`.
