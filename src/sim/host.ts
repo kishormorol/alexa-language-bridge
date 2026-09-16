@@ -41,6 +41,7 @@ export class SimulatedHost {
 
     // Remember which tools declare a UI, so a turn knows whether to show a card.
     const { tools } = await client.listTools();
+    this.router.useTools?.(tools);
     for (const tool of tools) {
       const meta = tool._meta as { ui?: { resourceUri?: string } } | undefined;
       const uri = meta?.ui?.resourceUri;

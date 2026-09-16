@@ -69,8 +69,15 @@ It is a genuine MCP host — it authenticates properly, reads `tools/list`, hono
 `_meta.ui.resourceUri` a tool declares, and fetches the `ui://` resource to render.
 Nothing is stubbed between the UI and the server.
 
-Intent routing stands in for what Alexa+ would do. `ROUTER=rules` is deterministic
-and offline; a Bedrock-backed router replaces it once model access lands.
+Intent routing stands in for what Alexa+ would do, chosen with `ROUTER`:
+
+| `ROUTER` | How it decides | Cost |
+| --- | --- | --- |
+| `rules` (default) | Keyword rules for the demo phrases, English and romanised Bangla | Offline, ~5 ms |
+| `bedrock` | Claude Haiku 4.5 on Bedrock, given the tool list the host discovered | ~0.6–1.2 s and one model call per turn |
+| `hybrid` | Rules first; the model only when no rule matches | Rule speed for the phrases a kitchen repeats |
+
+`bedrock` and `hybrid` need AWS credentials; `hybrid` is what the demo runs on.
 
 ## Authentication
 

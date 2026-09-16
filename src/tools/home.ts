@@ -177,7 +177,15 @@ export function registerHomeTools(server: McpServer, { store, language }: ToolDe
       if (!person) return unknownMember(member);
 
       const open = await store.listItems(hid, list, false);
-      const matches = open.filter((i) => mentions(i, item));
+      let matches = open.filter((i) => mentions(i, item));
+      if (matches.length === 0) {
+        // Ma says "dudh" for the "milk" Rafi added. That only matches once the item
+        // has been rendered in her language, which it has not if she never read the
+        // list — so render it now, as she would have heard it, and look again. The
+        // renderings are kept, so this costs a model call once per item, not per ask.
+        for (const i of open) await forMember(language, i, person, LIST_CTX);
+        matches = open.filter((i) => mentions(i, item));
+      }
       if (matches.length === 0) return failure(`Nothing on the ${list} list matches "${item}".`);
 
       const closed = await store.completeListItems(hid, list, matches.map((m) => m.id));
