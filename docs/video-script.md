@@ -53,9 +53,11 @@ Switch to **Rafi**. Type `what's on the list`.
 one house."
 
 **Beat 3 — it goes both ways (0:52)**
-As **Rafi**, `add milk to the list`. Switch to **Ma**, `milk hoye geche`.
+As **Rafi**, `add milk to the list`. Switch to **Ma**, `dudh hoye geche`.
+*The card shows milk ticked off. Hold on it.*
 
-**VO:** "She ticks off the milk he added — in a language she doesn't read."
+**VO:** "He wrote 'milk'. She says 'dudh'. It's the same carton, and the house knows
+that."
 
 **Beat 4 — she runs the house (1:08)**
 As **Ma**, `bati nibhiye dao`.
@@ -83,11 +85,15 @@ Streamable HTTP, behind OAuth 2.1 with PKCE and resource-bound tokens."
 is stored exactly as it was said, and rendered for whoever is asking. That's the whole
 design, and it's why she isn't a second-class user of her own home."
 
+**VO:** "The language work runs on Amazon Bedrock, with Claude Haiku 4.5. Common
+phrases are answered by rules at rule speed, and anything else goes to the model. Each
+rendering is cached, so a repeat comes back in milliseconds."
+
 **VO:** "The card is an MCP App — a `ui://` resource the tool declares, rendered by the
 host. Language identity persists across sessions, so the device remembers who speaks
 what."
 
-**On screen:** `76 tests · MCP 2025-11-25 · OAuth 2.1 + PKCE · MCP Apps`
+**On screen:** `86 tests · MCP 2025-11-25 · OAuth 2.1 + PKCE · MCP Apps · Amazon Bedrock`
 
 ---
 
@@ -109,8 +115,12 @@ the in-laws, the parent who moved in last year."
 ## Recording checklist
 
 - [ ] `rm -f .state/sim.json` first — a clean household, no leftovers from testing
-- [ ] `LANGUAGE_PROVIDER=bedrock` — **the demo is not shootable on `echo`**; beats 2–4
-      show `[en-US] chal` instead of `rice` and beat 4 fails outright
+- [ ] `LANGUAGE_PROVIDER=bedrock ROUTER=hybrid PREWARM=true npm run sim` —
+      **the demo is not shootable on `echo`**; beats 2–4 show `[en-US] chal` instead
+      of `rice`, and beats 3–4 fail outright. `hybrid` is the mode the README says the
+      demo runs on. `PREWARM` stops a cold model call from stalling on camera
+- [ ] Do one full dry run first, then `rm -f .state/sim.json` again. The translation
+      cache survives, so every beat in the real take renders instantly
 - [ ] Browser at ~1280×800, zoomed so text is legible at 720p
 - [ ] Hide bookmarks bar, close other tabs, clean desktop
 - [ ] Type at a human speed — do not paste
